@@ -1,7 +1,0 @@
-# action pattern
-# attributes of goal
-int32 block_id
----
-# attributes of result
----
-# attributes of feedback

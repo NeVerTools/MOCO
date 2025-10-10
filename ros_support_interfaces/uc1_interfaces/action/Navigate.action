@@ -1,7 +1,0 @@
-# action pattern
-# attributes of goal
-int32 loc_id
----
-# attributes of result
----
-# attributes of feedback
