@@ -45,7 +45,7 @@ def main_scxml_to_jani(_args: Optional[Sequence[str]] = None) -> None:
     parser.add_argument(
         "--generated-scxml-dir",
         type=str,
-        default="",
+        default="./output",
         help="Path to the folder containing the generated plain-SCXML files.",
     )
     parser.add_argument(
@@ -67,7 +67,7 @@ def main_scxml_to_jani(_args: Optional[Sequence[str]] = None) -> None:
         else main_xml_file.removesuffix("xml") + "jani"
     )
 
-    print("AS2FM - SCXML to JANI.\n")
+    print("AS2FM - RoAML to SCXML.\n")
     print(f"Loading model from {main_xml_file}.")
 
     interpret_top_level_xml(main_xml_file, jani_file=jani_out_file, scxmls_dir=scxml_out_dir)
