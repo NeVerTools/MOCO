@@ -20,9 +20,9 @@ import unittest
 
 import pytest
 
-from as2fm.jani_generator.scxml_helpers.top_level_interpreter import interpret_top_level_xml
+from moco.jani_generator.scxml_helpers.top_level_interpreter import interpret_top_level_xml
 
-from ..as2fm_common.test_utilities_smc_storm import run_smc_storm_with_output
+from ..moco_common.test_utilities_smc_storm import run_smc_storm_with_output
 
 
 # pylint: disable=too-many-public-methods
@@ -51,7 +51,7 @@ class TestConversion(unittest.TestCase):
         jani_file = "main.jani"
         test_folder = os.path.dirname(main_xml_full_path)
         interpret_top_level_xml(
-            main_xml_full_path, jani_file="main.jani", scxmls_dir=generated_scxml_path
+            main_xml_full_path, scxmls_dir=generated_scxml_path
         )
         jani_file_path = os.path.join(test_folder, jani_file)
         generated_scxml_path = os.path.join(test_folder, generated_scxml_path)

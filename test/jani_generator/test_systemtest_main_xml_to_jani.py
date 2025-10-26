@@ -19,12 +19,12 @@ import os
 
 import pytest
 
-from as2fm.jani_generator.scxml_helpers.top_level_interpreter import (
+from moco.jani_generator.scxml_helpers.top_level_interpreter import (
     RoamlMain,
     interpret_top_level_xml,
 )
 
-from ..as2fm_common.test_utilities_smc_storm import run_smc_storm_with_output
+from ..moco_common.test_utilities_smc_storm import run_smc_storm_with_output
 from .utils import json_jani_properties_match
 
 rel_examples_folder = os.path.join("..", "..", "..", "examples")
@@ -82,7 +82,7 @@ def _test_with_main(
 
     try:
         interpret_top_level_xml(
-            xml_main_path, jani_file=model_jani, scxmls_dir=generated_scxml_path
+            xml_main_path, scxmls_dir=generated_scxml_path
         )
         if generate_plain_scxml:
             assert os.path.exists(plain_scxml_path), "Expected to find generated plain SCXMl files"
