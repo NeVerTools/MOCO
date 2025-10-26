@@ -19,11 +19,11 @@ from typing import List, MutableSequence, Tuple
 
 import pytest
 
-from moco.scxml_converter.data_types.type_utils import get_data_type_from_string
-from moco.scxml_converter.data_types.xml_struct_definition import XmlStructDefinition
-from moco.scxml_converter.scxml_entries import ScxmlData, ScxmlDataModel
-from moco.scxml_converter.scxml_entries.type_utils import ScxmlStructDeclarationsContainer
-from moco.scxml_converter.scxml_entries.utils import (
+from moco.roaml_converter.data_types.type_utils import get_data_type_from_string
+from moco.roaml_converter.data_types.xml_struct_definition import XmlStructDefinition
+from moco.roaml_converter.scxml_entries import ScxmlData, ScxmlDataModel
+from moco.roaml_converter.scxml_entries.type_utils import ScxmlStructDeclarationsContainer
+from moco.roaml_converter.scxml_entries.utils import (
     PLAIN_FIELD_EVENT_PREFIX,
     PLAIN_SCXML_EVENT_DATA_PREFIX,
     CallbackType,

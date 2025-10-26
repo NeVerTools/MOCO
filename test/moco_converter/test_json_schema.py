@@ -15,7 +15,7 @@
 
 import os
 
-from moco.scxml_converter.data_types.json_struct_definition import JsonStructDefinition
+from moco.roaml_converter.data_types.json_struct_definition import JsonStructDefinition
 
 
 def test_json_from_dict_types():

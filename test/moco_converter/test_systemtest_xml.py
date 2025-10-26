@@ -18,8 +18,8 @@ from typing import Dict, List, Tuple
 
 from test_utils import canonicalize_xml, to_snake_case
 
-from moco.scxml_converter.bt_converter import bt_converter
-from moco.scxml_converter.scxml_entries import ScxmlRoot
+from moco.roaml_converter.bt_converter import bt_converter
+from moco.roaml_converter.scxml_entries import ScxmlRoot
 
 
 def get_output_folder(test_folder: str):

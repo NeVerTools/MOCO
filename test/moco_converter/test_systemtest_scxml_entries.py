@@ -17,7 +17,7 @@ import os
 
 from test_utils import canonicalize_xml
 
-from moco.scxml_converter.scxml_entries import (
+from moco.roaml_converter.scxml_entries import (
     BtGetValueInputPort,
     BtInputPortDeclaration,
     BtTick,
@@ -37,7 +37,7 @@ from moco.scxml_converter.scxml_entries import (
     ScxmlState,
     ScxmlTransition,
 )
-from moco.scxml_converter.scxml_entries.utils import ROS_FIELD_PREFIX
+from moco.roaml_converter.scxml_entries.utils import ROS_FIELD_PREFIX
 
 
 def _test_scxml_from_code(scxml_root: ScxmlRoot, ref_file_path: str):

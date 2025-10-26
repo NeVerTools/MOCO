@@ -24,13 +24,13 @@ import unittest
 import lxml.etree as ET
 import pytest
 
-from moco.jani_generator.scxml_helpers.scxml_event import EventsHolder
-from moco.jani_generator.scxml_helpers.scxml_to_jani import (
+from moco.roaml_generator.scxml_helpers.scxml_event import EventsHolder
+from moco.roaml_generator.scxml_helpers.scxml_to_jani import (
     convert_multiple_scxmls_to_jani,
     convert_scxml_root_to_jani_automaton,
 )
-from moco.scxml_converter.data_types.type_utils import MEMBER_ACCESS_SUBSTITUTION
-from moco.scxml_converter.scxml_entries import ScxmlRoot
+from moco.roaml_converter.data_types.type_utils import MEMBER_ACCESS_SUBSTITUTION
+from moco.roaml_converter.scxml_entries import ScxmlRoot
 
 rel_examples_folder = os.path.join("..", "..", "..", "examples")
 

@@ -21,11 +21,11 @@ keywords = []
 dependencies = [
     # moco_common
     "lxml",
-    # jani_generator
+    # roaml_generator
     "jsonschema",
     "esprima",
     "escodegen",
-    # scxml_converter
+    # roaml_converter
     "typing-extensions>=4.12.2",
 ]
 requires-python = ">=3.10"
@@ -42,7 +42,7 @@ requires-python = ">=3.10"
 "moco.resources" = ["bt_control_nodes/*.scxml"]
 
 [project.scripts]
-moco_roaml_to_scxml = "moco.jani_generator.main:main_roaml_to_scxml" # TODO: rename this function
+moco_roaml_to_scxml = "moco.roaml_generator.main:main_roaml_to_scxml" # TODO: rename this function
 
 [project.optional-dependencies]
 dev = [

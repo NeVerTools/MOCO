@@ -1,7 +1,7 @@
 from typing import Dict
 
 from moco.moco_common.ecmascript_interpretation import get_array_expr_as_list
-from moco.scxml_converter.data_types.xml_struct_definition import XmlStructDefinition
+from moco.roaml_converter.data_types.xml_struct_definition import XmlStructDefinition
 
 
 def expand_struct_definitions(struct_definitions: Dict[str, XmlStructDefinition]):

@@ -19,7 +19,7 @@ import os
 
 import pytest
 
-from moco.scxml_converter.scxml_entries import ScxmlRoot
+from moco.roaml_converter.scxml_entries import ScxmlRoot
 
 TEST_FOLDER: str = os.path.join(os.path.dirname(__file__), "_test_data", "battery_drainer_w_bt")
 

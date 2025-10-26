@@ -16,7 +16,7 @@
 import pytest
 
 from moco.moco_common.array_type import ArrayInfo
-from moco.jani_generator.jani_entries.jani_expression_generator import (
+from moco.roaml_generator.jani_entries.jani_expression_generator import (
     array_create_operator,
     array_value_operator,
 )

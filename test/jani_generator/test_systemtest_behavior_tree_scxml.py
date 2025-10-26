@@ -20,7 +20,7 @@ import unittest
 
 import pytest
 
-from moco.jani_generator.scxml_helpers.top_level_interpreter import interpret_top_level_xml
+from moco.roaml_generator.scxml_helpers.top_level_interpreter import interpret_top_level_xml
 
 from ..moco_common.test_utilities_smc_storm import run_smc_storm_with_output
 

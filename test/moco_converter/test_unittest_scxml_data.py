@@ -21,8 +21,8 @@ import lxml.etree as ET
 import pytest
 
 from moco.moco_common.logging import INTERNAL_FILEPATH_ATTR
-from moco.scxml_converter.scxml_entries import ScxmlData, ScxmlDataModel
-from moco.scxml_converter.scxml_entries.xml_utils import XmlUtilsError
+from moco.roaml_converter.scxml_entries import ScxmlData, ScxmlDataModel
+from moco.roaml_converter.scxml_entries.xml_utils import XmlUtilsError
 
 
 class TestScxmlData(unittest.TestCase):

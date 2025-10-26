@@ -19,7 +19,7 @@ import os
 
 import pytest
 
-from moco.jani_generator.scxml_helpers.top_level_interpreter import (
+from moco.roaml_generator.scxml_helpers.top_level_interpreter import (
     RoamlMain,
     interpret_top_level_xml,
 )
