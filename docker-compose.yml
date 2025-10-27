@@ -1,7 +1,7 @@
 
 services:
   base:
-    image: ghcr.io/convince-project/moco:latest # TODO fix link once release is up
+    image: ghcr.io/nevertools/moco:latest # TODO fix link once release is up
     build:
       context: .
       dockerfile: .docker/Dockerfile
