@@ -6,8 +6,14 @@ on:
   pull_request:
 
 env:
-  REGISTRY_IMAGE: ghcr.io/${{ github.repository_owner }}/as2fm
-  REGISTRY_IMAGE_LATEST: ghcr.io/${{ github.repository_owner }}/as2fm:latest
+
+  OWNER: '${{ github.repository_owner }}'
+
+  # TODO hardcoded, should instead get repository_owner and convert to lowercase
+  OWNER_LC: 'nevertools'
+
+  REGISTRY_IMAGE: ghcr.io/$OWNER_LC/moco
+  REGISTRY_IMAGE_LATEST: ghcr.io/$OWNER_LC/moco:latest
   RAW_BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
 jobs:
   build:
@@ -41,7 +47,7 @@ jobs:
           docker push ${{ env.REGISTRY_IMAGE }}:$BRANCH_NAME
           echo "TAG_NAME=$BRANCH_NAME" >> $GITHUB_ENV
       - name: Testing
-        run: docker run ${{ env.REGISTRY_IMAGE_LATEST }} pytest /colcon_ws/src/as2fm
+        run: docker run ${{ env.REGISTRY_IMAGE_LATEST }} pytest /colcon_ws/src/moco
       - name: Push to gh registry with latest if this is main
         if: github.ref == 'refs/heads/main'
         run: |
