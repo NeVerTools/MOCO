@@ -130,7 +130,7 @@ def get_srv_type_params(service_definition: str) -> Tuple[Dict[str, str], Dict[s
     srv_module = __import__(interface_ns + ".srv", fromlist=[""])
     srv_class = getattr(srv_module, interface_type)
 
-    # TODO: Fields can be nested. Look AS2FM/roaml_converter/src/roaml_converter/roaml_converter.py
+    # TODO: Fields can be nested. Look MOCO/roaml_converter/src/roaml_converter/roaml_converter.py
     req_fields = extract_params_from_ros_type(srv_class.Request)
     res_fields = extract_params_from_ros_type(srv_class.Response)
 

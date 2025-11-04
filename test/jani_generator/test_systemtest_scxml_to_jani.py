@@ -211,7 +211,7 @@ class TestConversion(unittest.TestCase):
         with open(xml_main_path, "w", encoding="utf-8") as f:
             f.write(xml_content)
         p = subprocess.Popen(
-            ["moco_scxml_to_jani", xml_main_path],
+            ["moco_roaml_to_scxml", xml_main_path],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             cwd=tmp_test_dir,

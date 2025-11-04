@@ -285,10 +285,10 @@ def test_convert_expression_with_object_arrays():
 def test_convert_expression_with_string_literals():
     """Test if the functionality works in a number of cases."""
     test_cases = [
-        ("'moco'", "[97, 115, 50, 102, 109]"),
-        ("moco_str == 'moco'", "moco_str == [97, 115, 50, 102, 109]"),
-        ("'moco' == moco_str", "[97, 115, 50, 102, 109] == moco_str"),
-        ("['as', '2', 'fm']", "[[97, 115], [50], [102, 109]]"),
+        ("'moco'", "[109, 111, 99, 111]"),
+        ("moco_str == 'moco'", "moco_str == [109, 111, 99, 111]"),
+        ("'moco' == moco_str", "[109, 111, 99, 111] == moco_str"),
+        ("['mo', 'co', 'lo', 'co']", "[[109, 111], [99, 111], [108, 111], [99, 111]]"),
     ]
 
     for in_val, gt_out in test_cases:
