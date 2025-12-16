@@ -19,10 +19,9 @@ Then verify that the correct versions are installed
 
 .. code-block:: bash
 
-    $ docker compose run --remove-orphans base smc_storm --version
+    $ docker compose run --remove-orphans base
     [+] Creating 1/1
     ...
-    0.1.4
 
 Local installation
 ^^^^^^^^^^^^^^^^^^
@@ -46,15 +45,7 @@ Don't forget to source ROS, e.g.:
 
     $ source /opt/ros/humble/setup.bash
 
-Install SMC Storm by downloading the `latest release <https://github.com/convince-project/smc_storm/releases>`_ and executing the installation script.
-Verify your installation:
 
-.. sybil-new-environment: smc_storm
-
-.. code-block:: bash
-
-    $ smc_storm --version
-    0.1.4
 
 AS2FM Python Package
 ````````````````````
@@ -97,9 +88,9 @@ Verify your installation by **sourcing your ROS distribution** (i.e. running `so
 
 .. code-block:: bash
 
-    $ as2fm_scxml_to_jani --help
+    $ as2fm_roaml_to_jani --help
 
-    usage: as2fm_scxml_to_jani [-h] [--generated-scxml-dir GENERATED_SCXML_DIR]
+    usage: as2fm_roaml_to_jani [-h] [--generated-scxml-dir GENERATED_SCXML_DIR]
                             [--jani-out-file JANI_OUT_FILE]
                             main_xml
 
@@ -110,8 +101,5 @@ Verify your installation by **sourcing your ROS distribution** (i.e. running `so
 
     options:
     -h, --help            show this help message and exit
-    --generated-scxml-dir GENERATED_SCXML_DIR
-                            Path to the folder containing the generated plain-
-                            SCXML files.
-    --jani-out-file JANI_OUT_FILE
-                            Path to the generated jani file.
+        --generated-scxml-dir GENERATED_SCXML_DIR
+                        Path to the folder containing the generated plain-SCXML files.
