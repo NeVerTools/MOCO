@@ -9,7 +9,7 @@ How To Guides
 High Level SCXML Model Implementation
 -------------------------------------
 
-SCXML is the language of choice to model the autonomous systems that are processed by AS2FM.
+SCXML is the language of choice to model the autonomous systems that are processed by MOCO.
 
 It relies on multiple SCXML files, each one representing a different state-based automaton, to represent a complete system.
 Those automata can exchange data and synchronize their execution through the use of **events**.
@@ -57,7 +57,7 @@ The following sections guide you through the process of :ref:`creating a SCXML m
 Creating an SCXML model of a ROS node
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In AS2FM, we extended the SCXML language with some additional functionalities, to support the following ROS specific features:
+In MOCO, we extended the SCXML language with some additional functionalities, to support the following ROS specific features:
 
 * :ref:`ROS Timers <ros_timers>`: to trigger callbacks at a specific rate
 * :ref:`ROS Topics <ros_topics>`: to publish-receive messages via a ROS topic
@@ -65,7 +65,7 @@ In AS2FM, we extended the SCXML language with some additional functionalities, t
 * :ref:`ROS Actions <ros_actions>`: to call a ROS action and implement action servers (under development)
 
 All functionalities require the interface to be declared before being used, similarly to how ROS requires the interfaces to be declared in a node.
-In (ROS) SCXML, this is done similarly to how variables are defined in the data model.
+In ASCXML, this is done similarly to how variables are defined in the data model.
 
 .. _ros_timers:
 
