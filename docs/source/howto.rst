@@ -6,12 +6,12 @@ How To Guides
 
 .. _scxml_howto:
 
-High Level SCXML Model Implementation
--------------------------------------
+RoaML Model Implementation
+--------------------------
 
-SCXML is the language of choice to model the autonomous systems that are processed by MOCO.
+RoaML is the language of choice to model the autonomous systems that are processed by MOCO.
 
-It relies on multiple SCXML files, each one representing a different state-based automaton, to represent a complete system.
+It relies on multiple (A)SCXML files, each one representing a different state-based automaton, to represent a complete system.
 Those automata can exchange data and synchronize their execution through the use of **events**.
 
 A simple, exemplary SCXML model is shown below:
@@ -49,7 +49,7 @@ The events are expected to be sent by another SCXML model, similarly to how it i
 
 In order to make SCXML fit more to the typical robotics tech-stack, we extended the default SCXML language to support ROS specific features and Behavior Trees.
 
-The following sections guide you through the process of :ref:`creating a SCXML model of a ROS node <ros_node_scxml>` and of a :ref:`BT plugin <bt_plugin_scxml>` that can be processed by AS2FM.
+The following sections guide you through the process of :ref:`creating a SCXML model of a ROS node <ros_node_scxml>` and of a :ref:`BT plugin <bt_plugin_scxml>` that can be processed by MOCO.
 
 
 .. _ros_node_scxml:
@@ -57,7 +57,7 @@ The following sections guide you through the process of :ref:`creating a SCXML m
 Creating an SCXML model of a ROS node
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In MOCO, we extended the SCXML language with some additional functionalities, to support the following ROS specific features:
+MOCO supports ASCXML, an extended SCXML language with some additional functionalities, such as the following ROS specific features:
 
 * :ref:`ROS Timers <ros_timers>`: to trigger callbacks at a specific rate
 * :ref:`ROS Topics <ros_topics>`: to publish-receive messages via a ROS topic
@@ -215,12 +215,12 @@ TODO
 
 .. _bt_plugin_scxml:
 
-Creating an SCXML model of a BT plugin
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Creating an ASCXML model of a BT plugin
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 As for ROS nodes, in AS2FM we support the implementation of custom BT plugins using ROS-SCXML.
 
-Since BT plugins rely on a specific interface, we extended the SCXML language to support the following features:
+Since BT plugins rely on a specific interface, the extended ASCXML language supports the following features:
 
 * :ref:`BT communication <bt_communication>`: A set of XML tags for modeling the BT Communication interface, based on BT ticks and BT responses.
 * :ref:`BT Ports <bt_ports>`: A special BT interface to parametrize a specific plugin instance.
@@ -317,7 +317,7 @@ Similarly, in case it receives a halt request, the node sends a halt request to 
 
 In this model, the `CHILDREN_COUNT` BT port is used to access the number of children of a control node instance, to check it is correctly configured.
 
-Additional control nodes implementations are available in the `src/as2fm/resources <https://github.com/convince-project/AS2FM/blob/main/src/as2fm/resources/bt_control_nodes>`_ folder, and can be used as a reference to implement new ones.
+Additional control nodes implementations are available in the `src/as2fm/resources <https://github.com/nevertools/MOCO/blob/main/src/moco/resources/bt_control_nodes>`_ folder, and can be used as a reference to implement new ones.
 
 .. _bt_ports:
 
@@ -383,7 +383,7 @@ This is defined in the BT XML file, by providing a blackboard variable name wrap
 
 .. _main_xml_howto:
 
-The System Description (High Level XML file)
+The System Description (Main XML file)
 ---------------------------------------------
 
 This file references all the components defining the system, including the Behavior Tree, its plugins and the additional nodes that might be running on the side.
@@ -410,10 +410,6 @@ An exemplary system description is the following:
             <input type="node-ascxml" src="./battery_drainer.ascxml" />
             <input type="node-ascxml" src="./battery_manager.ascxml" />
         </node_models>
-
-        <properties>
-            <input type="jani" src="./battery_properties.jani" />
-        </properties>
     </roaml>
 
 .. _parameters:
@@ -421,7 +417,7 @@ An exemplary system description is the following:
 Available Parameters
 ~~~~~~~~~~~~~~~~~~~~~
 
-AS2FM provides a number of parameters to control the generation of the formal model. They are all contained in the tag `<parameters>`.
+MOCO provides a number of parameters to control the generation of the formal model. They are all contained in the tag `<parameters>`.
 
 Max Time
 ____________
@@ -453,7 +449,7 @@ For example `<bt_tick_rate value="10.0">` would tick the behavior tree with a fr
 BT Tick If Not Running
 _________________________
 
-Whether we shall keep ticking a Behavior Tree after it returns something different from `RUNNING` (i.e. `SUCCESS` or `FAILURE`).
+Whether a Behavior Tree is kept ticking after it returns something other than `RUNNING` (i.e. `SUCCESS` or `FAILURE`).
 
 The tag is called `bt_tick_if_not_running`. The `value` argument enables or disables the ticking of non-running Behavior Trees, and is set to `false` by default. After the tree is stopped, the model execution will stop as well.
 
