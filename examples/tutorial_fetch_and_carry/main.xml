@@ -14,8 +14,4 @@
     <node_models>
         <input type="node-ascxml" src="./world.scxml" />
     </node_models>
-
-    <properties>
-        <input type="jani" src="./properties.jani" />
-    </properties>
 </roaml>

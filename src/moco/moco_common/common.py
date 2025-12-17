@@ -23,8 +23,7 @@ from typing import MutableSequence, Type, Union
 from lxml.etree import _Comment as XmlComment
 from lxml.etree import _Element as XmlElement
 
-# Set of basic types that are supported by the Jani language.
-# Basic types (from Jani docs):
+# Set of basic types that are supported by the language.
 # Types
 # We cover only the most basic types at the moment.
 # In the remainder of the specification, all requirements like "y must be of type x" are to be
@@ -91,7 +90,7 @@ def string_as_bool(value_str: str) -> bool:
 
 def is_valid_variable_name(var_name: str) -> bool:
     """
-    Check if a string can represent a variable name in JANI and SCXML.
+    Check if a string can represent a variable name in  SCXML.
 
     This differs from the string.isidentifier() python function, since we allow more possibilities:
     * A variable name must start with a character or an underscore;
