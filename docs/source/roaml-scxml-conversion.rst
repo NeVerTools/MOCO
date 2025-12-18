@@ -1,5 +1,3 @@
-.. _roaml_conversion:
-
 RoaML to SCXML Conversion
 =========================
 
