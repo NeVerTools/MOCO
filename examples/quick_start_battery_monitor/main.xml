@@ -15,4 +15,8 @@
         <input type="node-ascxml" src="./battery_drainer.scxml" />
         <input type="node-ascxml" src="./battery_manager.scxml" />
     </node_models>
+
+  <properties>
+    <input type="jani" src="./battery_properties.jani" />
+  </properties>
 </roaml>

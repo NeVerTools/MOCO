@@ -88,7 +88,7 @@ def evaluate_bash_block(example, cwd):
 
 
 def collect_docs():
-    """Search for *.rst files under `docs/source`."""
+    # Search for *.rst files under `docs/source`
     docs_folder_path = Path(__file__).parent / "source"
     assert docs_folder_path.exists(), f"Docs path doesn't exist: {docs_folder_path.resolve()}"
 
@@ -104,7 +104,9 @@ def collect_docs():
         path=docs_folder_path.as_posix(),
     )
     documents = []
+    print(all_rst_files)
     for f_path in all_rst_files:
+        print(f_path)
         doc = sybil.parse(f_path)
         rel_path = os.path.relpath(f_path, MOCO_FOLDER)
         if len(list(doc)) > 0:
@@ -114,7 +116,6 @@ def collect_docs():
 
 
 # TODO rewrite the documentation, then remove this skip mark
-@pytest.mark.skip(reason="Docs are gonna have to be redone, no point in testing the old ones")
 @pytest.mark.parametrize("path, blocks", collect_docs())
 def test_doc_rst(path, blocks):
     """Testing all code blocks in one *.rst file under `path`."""

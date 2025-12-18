@@ -1,59 +1,109 @@
-Tutorial
-========
+Tutorials
+=========
 
-This section provides tutorials on how to use the MOCO tools to convert an autonomous robotic system into a model compatible with existing model checker tools (MOON and SCAn).
-The JANI models generated in the tutorials with AS2FM can be given to any model checker accepting JANI as input format and being able to handle DTMC models. This could for example be the `Storm SMC extension SMC-STORM <https://github.com/convince-project/smc_storm>`_, which we developed as part of the CONVINCE toolchain. Check out the documentation of SMC Storm for further details.
-It can also be checked with external tools accepting JANI as input, e.g., the other engines of the `Storm model checker <https://stormchecker.org>`_ or the `Modest Toolset <https://modestchecker.net>`_.
-
+This section provides two tutorials on how to use the MOCO tools to convert an autonomous robotic system into a model compatible with existing model checker tools (MOON and SCAn).
+The RoaML models generated in the tutorials can be given to any model checker accepting SCXML as input format, but we recommend SCAn.
 
 Prerequisites
 -------------
 
 You don't need to install MOCO locally on your machine. You can use the docker container, provided as a package on the `MOCO Github page <https://github.com/NeVerTools/MOCO/pkgs/container/moco>`_
 
-Just clone the repository and then run the following command in the root folder to start the docker in an interactive terminal such that you can then run all the commands in the tutorial inside the container.
+Either pull the container with the following command:
 
 .. sybil-new-environment: IGNORE
 
 .. code-block:: bash
 
-    $ docker compose run -it --remove-orphans base bash
+    $ docker pull ghcr.io/nevertools/moco:latest
+    ...
 
-Then, in the running container, navigate to the following folder, mounted from the cloned repository:
+or clone the repository and pull the image with docker compose:
+    .. code-block:: bash
+    $ docker compose pull
+    ...
 
-.. code-block:: bash
+Then, run the container with:
+    .. code-block:: bash
+    $ docker compose run --remove-orphans base
 
-    $ cd examples/tutorial_fetch_and_carry
 
-Should you want to install MOCO locally, follow the description in the :ref:`installation guide <installation>`.
+Should you wish to install MOCO locally, follow the description in the :ref:`installation guide <installation>`.
 
 .. _full_tutorial:
 
 What you will learn
 -------------------
 
-In this tutorial you will learn in about one hour how a robotic example can be expressed in SCXML.
+In this tutorial you will learn in about one hour how a robotic example can be expressed in RoaML with ROS and BT tools.
+Then, you will use MOCO to translate the model into plain SCXML.
 The example models a robot with a simple symbolic fetch and carry task.
-You will use linear temporal logic (LTL) properties to verify it is working correctly.
-Then, you will translate the model of the robot and its environment with AS2FM into JANI to run it with `SMC Storm <https://github.com/convince-project/smc_storm>`_, our statistical model checking (SMC) tool.
-With the results from SMC Storm, you will observe that some properties are fulfilled and some are violated.
-By updating the model with more complexity in terms of probabilistic behavior and additional features in the behavior tree (BT), you make sure that the required properties hold in the end.
-This verifies, that your BT controls the example correctly.
 
-We assume some background in computer science or as a robotics developer but no knowledge about formal methods or model checking is required.
+We assume some background in computer science or as a robotics developer, but no knowledge about formal methods or model checking is required.
 
 
-Reference Model: Fetch & Carry Robot
-------------------------------------
+Tutorial 1: Battery Drainer
+```````````````````````````
 
-For this tutorial we use the model defined here: `tutorial_fetch_and_carry <https://github.com/convince-project/AS2FM/tree/main/examples/tutorial_fetch_and_carry>`_.
+For this tutorial, we use the model defined here: `quick_start_battery_monitor <https://github.com/nevertools/moco/tree/main/examples/quick_start_battery_monitor>`_.
+The model consists of a `main.xml` file, referencing the BT files running in the system and the SCXML files modeling the BT plugins, as well as the environment and the ROS nodes.
+
+This example models a simple system with a battery that is continuously drained and, once it reaches a certain level, an alarm is triggered.
+A behavior tree continuously monitors the alarm topic and, once it is triggered, recharges the battery to its full level before starting the draining process again.
+
+The image below gives an overview of an exemplary system to be model-checked.
+
+.. image:: graphics/scxml_tutorial_quick_start_battery_monitor.drawio.svg
+    :width: 800
+    :alt: An image of the complete exemplary system.
+
+In this example, the system is composed by the following nodes modeled in ASCXML:
+
+* a **Battery Drainer**, that at each time step drains the battery by 1%, and each time the charge trigger is received, it recharges the battery to 100%.
+* a **Battery Manager**, that at each time the battery level is received checks if it is below 30% and, if so, triggers the alarm.
+
+The **Behavior Tree** continuously checks the alarm topic and, once it is triggered, sends a charge trigger to the battery drainer.
+
+In the `main.xml file <https://github.com/nevertools/moco/blob/main/examples/quick_start_battery_monitor/main.xml>`_ introduced earlier, the maximum run time of the system is specified with ``max_time`` and shared across the components. To make sure that the model-checked property makes sense, the allowed runtime needs to be high enough to have enough time to deplete the battery, i.e., in this example the maximal time needs to be at least 100s because the battery is depleted by 1% per second. Further information about this and other configuration parameters can be found in the :ref:`Available Parameters section <parameters>` of the :ref:`How-To page <howto>`.
+
+In addition, in this main file, all the components of the example are put together, and the property to use is indicated.
+
+Running the Script
+`````````````````````
+
+After installing the package as described in the :ref:`installation section <installation>`, a full system RoaML model can be converted into a model-checkable plain SCXML file as follows:
+
+.. sybil-new-environment: quick_start_battery_monitor
+    :cwd: .
+
+.. code-block:: bash
+
+    $ cd examples/quick_start_battery_monitor/ && \
+      moco_roaml_to_scxml main.xml
+
+    MOCO - RoAML to SCXML.
+
+    Loading model from main.xml.
+    ...
+
+The output is a folder (./output, unless otherwise specified) containing the plain SCXML files for the model.
+
+
+Tutorial 2: Fetch & Carry Robot
+-------------------------------
+
+For this tutorial we use the model defined here: `tutorial_fetch_and_carry <https://github.com/nevertools/moco/tree/main/examples/tutorial_fetch_and_carry>`_.
 A classical fetch and carry task is implemented there. A robot should drive to the pantry where food is stored, pick up snacks, drive to the table and place the snacks there. The robot should be done with this task after at most 100 seconds.
 
-The model consists of a `main.xml <https://github.com/convince-project/AS2FM/blob/main/examples/tutorial_fetch_and_carry/main.xml>`_ file, referencing the BT `bt_tree.xml <https://github.com/convince-project/AS2FM/blob/main/examples/tutorial_fetch_and_carry/bt_tree.xml>`_ running in the system and the SCXML files modeling the BT plugins for navigating `bt_navigate_action.scxml <https://github.com/convince-project/AS2FM/blob/main/examples/tutorial_fetch_and_carry/bt_navigate_action.scxml>`_, picking `bt_pick_action.scxml <https://github.com/convince-project/AS2FM/blob/main/test/roaml_generator/
-_test_data/tutorial_fetch_and_carry/bt_pick_action.scxml>`__, and placing `bt_place_action.scxml <https://github.com/convince-project/AS2FM/blob/main/examples/tutorial_fetch_and_carry/bt_place_action.scxml>`_, as well as the world model `world.scxml <https://github.com/convince-project/AS2FM/blob/main/examples/tutorial_fetch_and_carry/world.scxml>`_. Finally, there is the property to check later with SMC Storm in JANI format in `properties.jani <https://github.com/convince-project/AS2FM/blob/main/examples/tutorial_fetch_and_carry/properties.jani>`_.
+The model consists of a `main.xml <https://github.com/nevertools/moco/blob/main/examples/tutorial_fetch_and_carry/main.xml>`_ file, referencing the BT `bt_tree.xml <https://github.com/nevertools/moco/blob/main/examples/tutorial_fetch_and_carry/bt_tree.xml>`_ running in the system and the SCXML files modeling the BT plugins for navigating `bt_navigate_action.scxml <https://github.com/nevertools/moco/blob/main/examples/tutorial_fetch_and_carry/bt_navigate_action.scxml>`_, picking `bt_pick_action.scxml <https://github.com/nevertools/moco/blob/main/test/roaml_generator/_test_data/tutorial_fetch_and_carry/bt_pick_action.scxml>`__, and placing `bt_place_action.scxml <https://github.com/nevertools/moco/blob/main/examples/tutorial_fetch_and_carry/bt_place_action.scxml>`_, as well as the world model `world.scxml <https://github.com/nevertools/moco/blob/main/examples/tutorial_fetch_and_carry/world.scxml>`_.
 
-All of those components are summarized and collected in the `main.xml <https://github.com/convince-project/AS2FM/blob/main/examples/tutorial_fetch_and_carry/main.xml>`_ file.
+All of those components are summarized and collected in the `main.xml <https://github.com/nevertools/moco/blob/main/examples/tutorial_fetch_and_carry/main.xml>`_ file.
 
+For the rest of the tutorial it is assumed the container is running and you have navigated to the model's folder - mounted from the cloned repository:
+
+.. code-block:: bash
+
+    $ cd examples/tutorial_fetch_and_carry
 
 * First, some parameters configuring generic properties of the system are defined. In this example we bound the maximum execution time to 100 seconds, and configure unbounded arrays to contain at most 10 elements.
 
@@ -64,7 +114,7 @@ All of those components are summarized and collected in the `main.xml <https://g
             <max_array_size value="10" />
         </parameters>
 
-* Afterwards the Behavior Tree is fully specified in terms of the BT in the BT.cpp XML format and the used BT plugins in SCXML for navigating, picking, and placing. We will go into the details of the individual files later.
+* Afterwards the Behavior Tree is fully specified in terms of the BT in the BT.cpp XML format and the used BT plugins in ASCXML for navigating, picking, and placing. We will go into the details of the individual files later.
 
     .. code-block:: xml
 
@@ -83,42 +133,34 @@ All of those components are summarized and collected in the `main.xml <https://g
             <input type="node-ascxml" src="./world.scxml" />
         </node_models>
 
-* In the end the properties are specified. We will go into the details of the checked property later.
-
-    .. code-block:: xml
-
-        <properties>
-            <input type="jani" src="./properties.jani" />
-        </properties>
-
-The behavior tree specified in `bt_tree.xml <https://github.com/convince-project/AS2FM/blob/main/examples/tutorial_fetch_and_carry/bt_tree.xml>`_ looks as depicted in the image below. The SequenceWithMemory node ticks each child in order until all of them have returned Success. Those who already returned Success are not ticked in the next cycle again.
+The behavior tree specified in `bt_tree.xml <https://github.com/nevertools/moco/blob/main/examples/tutorial_fetch_and_carry/bt_tree.xml>`_ looks as depicted in the image below. The SequenceWithMemory node ticks each child in order until all of them have returned Success. Those who already returned Success are not ticked in the next cycle again.
 The location is encoded as 0 = in the pantry and 1 = at the table. The snack object has id 0.
 
 .. image:: graphics/scxml_tutorial_ros_fetch_and_carry_bt.drawio.svg
     :width: 600
     :alt: An image of the behavior tree of the fetch and carry example.
 
-The next image depicts the behavior of the BT plugin `bt_navigate_action.scxml <https://github.com/convince-project/AS2FM/blob/main/examples/tutorial_fetch_and_carry/bt_navigate_action.scxml>`_. It is used to navigate to a certain location given by the id, either 0 or 1 in this example, stored in `data`. When the BT is ticked it assigns `loc_id = data`. When the BT is halted or the action is aborted `tmp_result` is set to `false`, otherwise it is set to `true`. Based on that the return status of the tree is then published.
+The next image depicts the behavior of the BT plugin `bt_navigate_action.scxml <https://github.com/nevertools/moco/blob/main/examples/tutorial_fetch_and_carry/bt_navigate_action.scxml>`_. It is used to navigate to a certain location given by the id, either 0 or 1 in this example, stored in `data`. When the BT is ticked it assigns `loc_id = data`. When the BT is halted or the action is aborted `tmp_result` is set to `false`, otherwise it is set to `true`. Based on that the return status of the tree is then published.
 
 .. image:: graphics/scxml_tutorial_ros_fetch_and_carry_bt_navigate.drawio.png
     :width: 600
     :alt: An image of the BT navigate action plugin.
 
-The next image depicts the behavior of the BT plugin `bt_pick_action.scxml <https://github.com/convince-project/AS2FM/blob/main/examples/tutorial_fetch_and_carry/bt_pick_action.scxml>`_ in a very similar fashion. The action is used to pick a certain item with a given id, stored in `data`. When the BT is ticked it assigns `object_id = data`. When the BT is halted or the action is aborted `tmp_result` is set to `false`, otherwise it is set to `true`. Based on that the return status of the tree is then published.
+The next image depicts the behavior of the BT plugin `bt_pick_action.scxml <https://github.com/nevertools/moco/blob/main/examples/tutorial_fetch_and_carry/bt_pick_action.scxml>`_ in a very similar fashion. The action is used to pick a certain item with a given id, stored in `data`. When the BT is ticked it assigns `object_id = data`. When the BT is halted or the action is aborted `tmp_result` is set to `false`, otherwise it is set to `true`. Based on that the return status of the tree is then published.
 
 .. image:: graphics/scxml_tutorial_ros_fetch_and_carry_bt_pick.drawio.png
     :width: 600
     :alt: An image of the BT pick action plugin.
 
-The next image depicts the behavior of the BT plugin `bt_place_action.scxml <https://github.com/convince-project/AS2FM/blob/main/examples/tutorial_fetch_and_carry/bt_place_action.scxml>`_. When called, the action just immediately tries to successfully execute, no matter if there is an object in the gripper or not, when the BT is ticked. When the BT is halted or the action is aborted `tmp_result` is set to `false`, otherwise it is set to `true`. Based on that the return status of the tree is then published.
+The next image depicts the behavior of the BT plugin `bt_place_action.scxml <https://github.com/nevertools/moco/blob/main/examples/tutorial_fetch_and_carry/bt_place_action.scxml>`_. When called, the action just immediately tries to successfully execute, no matter if there is an object in the gripper or not, when the BT is ticked. When the BT is halted or the action is aborted `tmp_result` is set to `false`, otherwise it is set to `true`. Based on that the return status of the tree is then published.
 
 .. image:: graphics/scxml_tutorial_ros_fetch_and_carry_bt_place.drawio.png
     :width: 600
     :alt: An image of the BT place action plugin.
 
-As a last step we are having a closer look at the environment model in `world.scxml <https://github.com/convince-project/AS2FM/blob/main/examples/tutorial_fetch_and_carry/world.scxml>`_.
+As a last step, we take a closer look at the environment model in `world.scxml <https://github.com/nevertools/moco/blob/main/examples/tutorial_fetch_and_carry/world.scxml>`_.
 
-* First, it is indicated that the model makes use of the interfaces from the `fetch_and_carry_msgs <https://github.com/convince-project/AS2FM/tree/main/ros_support_interfaces/fetch_and_carry_msgs>`_ package, where custom ROS actions are defined. In line 21 the ROS topic publisher for the snack type is declared.
+* First, it is indicated that the model makes use of the interfaces from the `fetch_and_carry_msgs <https://github.com/nevertools/moco/tree/main/ros_support_interfaces/fetch_and_carry_msgs>`_ package, where custom ROS actions are defined. In line 21 the ROS topic publisher for the snack type is declared.
 
     .. code-block:: xml
 
@@ -149,15 +191,14 @@ As a last step we are having a closer look at the environment model in `world.sc
 
 
 
-Model Translation with AS2FM
-----------------------------
+Model Translation with MOCO
+---------------------------
 
-From this model in SCXML you can generate a JANI representation with AS2FM.
-Assuming, you are in the ``examples/tutorial_fetch_and_carry`` folder:
+You can translate this RoaML model in SCXML just as easily as the first one.
+Assuming you are in the ``examples/tutorial_fetch_and_carry`` folder:
 
 .. sybil-new-environment: first_model_checking
     :cwd: examples/tutorial_fetch_and_carry
-    :expected-files: main.jani, traces.csv
 
 .. code-block:: bash
 
@@ -166,18 +207,10 @@ Assuming, you are in the ``examples/tutorial_fetch_and_carry`` folder:
     MOCO - RoAML to SCXML.
 
     Loading model from main.xml.
-    xml_file='./world.ascxml'
-    xml_file='./bt_navigate_action.ascxml'
-    xml_file='./bt_pick_action.ascxml'
-    xml_file='./bt_place_action.ascxml'
     ...
 
-This produces the same model in the `JANI format <https://jani-spec.org/>`_ in the file `main.jani`.
-You can find the expected sample output in `sample_solutions_and_outputs/reference_main.jani <https://github.com/convince-project/AS2FM/blob/main/examples/tutorial_fetch_and_carry/sample_solutions_and_outputs/reference_main.jani>`_.
+This produces an equivalent model in the plain `SCXML format <https://www.w3.org/TR/scxml/>`_ and saves it to the `./output` folder.
+You may specify a different output folder with the `--generated-scxml-dir` argument.
 
-Summary
--------
 
-Congratulations! You finished the tutorial on how to use AS2FM and SMC Storm on a fetch & carry use case. You learned how to generate a JANI model out of (SC)XML models of a BT, its BT plugins, and a world model with AS2FM. You successfully checked a temporal logic property on it and inspected the changes in the ROS topic variables during sample executions of the model produced by the model checker with PlotJuggler. Afterwards, you modified the example such that the behavior of the navigation and picking actions is probabilistic. In the end you even introduced a recovery strategy in case of failures in the BT.
-
-We hope that you got a better understanding of how to use AS2FM and SMC Storm on your own systems now.
+Should you wish to learn more about RoaML, its' tags and their handling, check the :ref:`RoaML to SCXML conversion <_roaml_scxml_conversion>`.
