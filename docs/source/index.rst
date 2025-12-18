@@ -33,9 +33,7 @@ Contents
    :maxdepth: 2
 
    installation
-   quick-guide
    tutorials
-   howto
    roaml-scxml-conversion
    api
    contacts

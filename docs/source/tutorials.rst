@@ -1,7 +1,7 @@
-Tutorial
-========
+Tutorials
+=========
 
-This section provides tutorials on how to use the MOCO tools to convert an autonomous robotic system into a model compatible with existing model checker tools (MOON and SCAn).
+This section provides two tutorials on how to use the MOCO tools to convert an autonomous robotic system into a model compatible with existing model checker tools (MOON and SCAn).
 The RoaML models generated in the tutorials can be given to any model checker accepting SCXML as input format, but we recommend SCAn.
 
 Prerequisites
@@ -22,28 +22,73 @@ Just pull the container and then run the following command in the root folder to
 
     $ docker compose run --remove-orphans base
 
-Then, in the running container, navigate to the following folder, mounted from the cloned repository:
-
-.. code-block:: bash
-
-    $ cd examples/tutorial_fetch_and_carry
-
-Should you want to install MOCO locally, follow the description in the :ref:`installation guide <installation>`.
+Should you wish to install MOCO locally, follow the description in the :ref:`installation guide <installation>`.
 
 .. _full_tutorial:
 
 What you will learn
 -------------------
 
-In this tutorial you will learn in about one hour how a robotic example can be expressed in SCXML.
+In this tutorial you will learn in about one hour how a robotic example can be expressed in RoaML with ROS and BT tools.
+Then, you will use MOCO to translate the model into plain SCXML.
 The example models a robot with a simple symbolic fetch and carry task.
-You will use linear temporal logic (LTL) properties to verify it is working correctly.
 
-We assume some background in computer science or as a robotics developer but no knowledge about formal methods or model checking is required.
+We assume some background in computer science or as a robotics developer, but no knowledge about formal methods or model checking is required.
 
 
-Reference Model: Fetch & Carry Robot
-------------------------------------
+Tutorial 1: Battery Drainer
+```````````````````````````
+
+For this tutorial, we use the model defined here: `quick_start_battery_monitor <https://github.com/nevertools/moco/tree/main/examples/quick_start_battery_monitor>`_.
+The model consists of a `main.xml` file, referencing the BT files running in the system and the SCXML files modeling the BT plugins, as well as the environment and the ROS nodes.
+
+This example models a simple system with a battery that is continuously drained and, once it reaches a certain level, an alarm is triggered.
+A behavior tree continuously monitors the alarm topic and, once it is triggered, recharges the battery to its full level before starting the draining process again.
+
+The image below gives an overview of an exemplary system to be model-checked.
+
+.. image:: graphics/scxml_tutorial_quick_start_battery_monitor.drawio.svg
+    :width: 800
+    :alt: An image of the complete exemplary system.
+
+In this example, the system is composed by the following nodes modeled in ASCXML:
+
+* a **Battery Drainer**, that at each time step drains the battery by 1%, and each time the charge trigger is received, it recharges the battery to 100%.
+* a **Battery Manager**, that at each time the battery level is received checks if it is below 30% and, if so, triggers the alarm.
+
+The **Behavior Tree** continuously checks the alarm topic and, once it is triggered, sends a charge trigger to the battery drainer.
+
+In the `main.xml file <https://github.com/nevertools/moco/blob/main/examples/quick_start_battery_monitor/main.xml>`_ introduced earlier, the maximum run time of the system is specified with ``max_time`` and shared across the components. To make sure that the model-checked property makes sense, the allowed runtime needs to be high enough to have enough time to deplete the battery, i.e., in this example the maximal time needs to be at least 100s because the battery is depleted by 1% per second. Further information about this and other configuration parameters can be found in the :ref:`Available Parameters section <parameters>` of the :ref:`How-To page <howto>`.
+
+In addition, in this main file, all the components of the example are put together, and the property to use is indicated.
+
+Running the Script
+`````````````````````
+
+After installing the package as described in the :ref:`installation section <installation>`, a full system RoaML model can be converted into a model-checkable plain SCXML file as follows:
+
+.. sybil-new-environment: quick_start_battery_monitor
+    :cwd: .
+
+.. code-block:: bash
+
+    $ cd examples/quick_start_battery_monitor/ && \
+      as2fm_roaml_to_jani main.xml
+
+    MOCO - RoAML to SCXML.
+
+    Loading model from main.xml.
+    xml_file='./battery_drainer.ascxml'
+    xml_file='./battery_manager.ascxml'
+    xml_file='./bt_topic_condition.ascxml'
+    xml_file='./bt_topic_action.ascxml'
+    ...
+
+The output is a folder (./output, unless otherwise specified) containing the plain SCXML files for the model.
+
+
+Tutorial 2: Fetch & Carry Robot
+-------------------------------
 
 For this tutorial we use the model defined here: `tutorial_fetch_and_carry <https://github.com/nevertools/moco/tree/main/examples/tutorial_fetch_and_carry>`_.
 A classical fetch and carry task is implemented there. A robot should drive to the pantry where food is stored, pick up snacks, drive to the table and place the snacks there. The robot should be done with this task after at most 100 seconds.
@@ -52,6 +97,11 @@ The model consists of a `main.xml <https://github.com/nevertools/moco/blob/main/
 
 All of those components are summarized and collected in the `main.xml <https://github.com/nevertools/moco/blob/main/examples/tutorial_fetch_and_carry/main.xml>`_ file.
 
+For the rest of the tutorial it is assumed the container is running and you have navigated to the model's folder - mounted from the cloned repository:
+
+.. code-block:: bash
+
+    $ cd examples/tutorial_fetch_and_carry
 
 * First, some parameters configuring generic properties of the system are defined. In this example we bound the maximum execution time to 100 seconds, and configure unbounded arrays to contain at most 10 elements.
 
@@ -106,7 +156,7 @@ The next image depicts the behavior of the BT plugin `bt_place_action.scxml <htt
     :width: 600
     :alt: An image of the BT place action plugin.
 
-As a last step we are having a closer look at the environment model in `world.scxml <https://github.com/nevertools/moco/blob/main/examples/tutorial_fetch_and_carry/world.scxml>`_.
+As a last step, we take a closer look at the environment model in `world.scxml <https://github.com/nevertools/moco/blob/main/examples/tutorial_fetch_and_carry/world.scxml>`_.
 
 * First, it is indicated that the model makes use of the interfaces from the `fetch_and_carry_msgs <https://github.com/nevertools/moco/tree/main/ros_support_interfaces/fetch_and_carry_msgs>`_ package, where custom ROS actions are defined. In line 21 the ROS topic publisher for the snack type is declared.
 
@@ -142,8 +192,8 @@ As a last step we are having a closer look at the environment model in `world.sc
 Model Translation with MOCO
 ---------------------------
 
-You can translate this RoaML model in SCXML, in order to check and validate it with SCAn or other tools.
-Assuming, you are in the ``examples/tutorial_fetch_and_carry`` folder:
+You can translate this RoaML model in SCXML just as easily as the first one.
+Assuming you are in the ``examples/tutorial_fetch_and_carry`` folder:
 
 .. sybil-new-environment: first_model_checking
     :cwd: examples/tutorial_fetch_and_carry
@@ -161,5 +211,8 @@ Assuming, you are in the ``examples/tutorial_fetch_and_carry`` folder:
     xml_file='./bt_place_action.ascxml'
     ...
 
-This produces the same model in a plain `SCXML format <https://www.w3.org/TR/scxml/>`_ in the `./output` folder.
-You may also specify a different output folder with the `--generated-scxml-dir` argument.
+This produces an equivalent model in the plain `SCXML format <https://www.w3.org/TR/scxml/>`_ and saves it to the `./output` folder.
+You may specify a different output folder with the `--generated-scxml-dir` argument.
+
+
+Should you wish to learn more about RoaML, its' tags and their handling, check the :ref:`RoaML to SCXML conversion <_roaml_scxml_conversion>`.
