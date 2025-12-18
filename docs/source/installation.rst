@@ -40,12 +40,15 @@ Once installed, be sure to source it (ie. via `$ source /opt/ros/humble/setup.ba
 
  Then run the following command to build the workspace:
 
- .. code-block:: bash
+.. code-block:: bash
+
     $ docker compose build base
     ...
 
 And you can now run it with:
- .. code-block:: bash
+
+.. code-block:: bash
+
     $ docker compose run --remove-orphans base
     [+] Creating 1/1
     ...
