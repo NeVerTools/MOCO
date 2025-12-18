@@ -1,6 +1,6 @@
 # Build documentation
 
-Before you can build the documentation, you need to install the required packages as described above, since also the code API documentation of those packages is built.
+Before you can build the documentation, you need to install the required packages as described, since the code API documentation of those packages is also built.
 
 ```
 pip install ../moco_common

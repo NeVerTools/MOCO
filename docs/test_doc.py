@@ -1,3 +1,4 @@
+import glob
 import os
 import subprocess
 from collections import OrderedDict
@@ -87,7 +88,7 @@ def evaluate_bash_block(example, cwd):
 
 
 def collect_docs():
-    """Search for *.rst files under `docs/source`."""
+    # Search for *.rst files under `docs/source`
     docs_folder_path = Path(__file__).parent / "source"
     assert docs_folder_path.exists(), f"Docs path doesn't exist: {docs_folder_path.resolve()}"
 
@@ -103,7 +104,9 @@ def collect_docs():
         path=docs_folder_path.as_posix(),
     )
     documents = []
+    print(all_rst_files)
     for f_path in all_rst_files:
+        print(f_path)
         doc = sybil.parse(f_path)
         rel_path = os.path.relpath(f_path, MOCO_FOLDER)
         if len(list(doc)) > 0:
@@ -113,7 +116,6 @@ def collect_docs():
 
 
 # TODO rewrite the documentation, then remove this skip mark
-@pytest.mark.skip(reason="Docs are gonna have to be redone, no point in testing the old ones")
 @pytest.mark.parametrize("path, blocks", collect_docs())
 def test_doc_rst(path, blocks):
     """Testing all code blocks in one *.rst file under `path`."""
@@ -157,14 +159,32 @@ def test_doc_rst(path, blocks):
         if EXPECTED_FILES in options:
             for file in options[EXPECTED_FILES].split(","):
                 expected_files.append(os.path.join(cwd, file.strip()))
-                assert not os.path.isfile(
-                    expected_files[-1]
-                ), f"File {expected_files[-1]} was *not* expected to exist before the test."
+                if "*" in expected_files[-1]:
+                    files = glob.glob(expected_files[-1])
+                    assert (
+                        len(files) == 0
+                    ), f"Expected *no* file matching {expected_files[-1]} before the test."
+                else:
+                    assert not os.path.isfile(
+                        expected_files[-1]
+                    ), f"File {expected_files[-1]} was *not* expected to exist before the test."
         # Execute all blocks in this environment
         try:
             for block in blocks:
                 evaluate_bash_block(block, cwd)
         finally:
             for file in expected_files:
-                assert os.path.isfile(file), f"File {file} was expected to exist *after* the test."
-                os.remove(file)
+                file = file.strip().rstrip()
+                if "*" in file:
+                    # This path has a wildcard: we need special handling
+                    files = glob.glob(file)
+                    assert (
+                        len(files) > 0
+                    ), f"Expected at least one file matching the pattern {file} *after* the test."
+                    for match in files:
+                        os.remove(match)
+                else:
+                    assert os.path.isfile(
+                        file
+                    ), f"File {file} was expected to exist *after* the test."
+                    os.remove(file)

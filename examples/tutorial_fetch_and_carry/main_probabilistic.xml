@@ -15,7 +15,7 @@
         <input type="node-ascxml" src="./world_probabilistic.scxml" />
     </node_models>
 
-    <properties>
-        <input type="jani" src="./properties.jani" />
-    </properties>
+  <properties>
+    <input type="jani" src="./properties.jani" />
+  </properties>
 </roaml>
