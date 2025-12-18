@@ -90,7 +90,7 @@ def string_as_bool(value_str: str) -> bool:
 
 def is_valid_variable_name(var_name: str) -> bool:
     """
-    Check if a string can represent a variable name in  SCXML.
+    Check if a string can represent a variable name in SCXML.
 
     This differs from the string.isidentifier() python function, since we allow more possibilities:
     * A variable name must start with a character or an underscore;
