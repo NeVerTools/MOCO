@@ -10,7 +10,7 @@ Overview
 The purpose of the provided program is to convert all specifications of components of the given robotic system into a format which can be given as input to model checkers for verifying the robustness of the system functionalities.
 It is intended for use with `GRAPE <https://github.com/NeVerTools/GRAPE>`_ and `SCAN <https://github.com/convince-project/SCAN>`_, respectively a development tool and a model checker.
 
-MOCO focuses on converting the RoaML model of the system, provided as a combination of `Behavior Tree (BT) XML <https://www.behaviortree.dev/docs/learn-the-basics/xml_format>`_ and :ref:`High-Level (HL)-SCXML<hl_scxml>` into a plain SCXML format that can be used by model checking tools such as SCAN.
+MOCO focuses on converting the RoaML model of the system into a plain `SCXML format <https://www.w3.org/TR/scxml/>`_ that can be used by model checking tools such as SCAN.
 A full robotic system and the information needed for model checking consists of:
 
 * one or multiple ROS nodes in (A)SCXML,

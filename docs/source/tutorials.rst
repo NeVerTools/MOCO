@@ -20,12 +20,14 @@ Either pull the container with the following command:
     ...
 
 or clone the repository and pull the image with docker compose:
-    .. code-block:: bash
+.. code-block:: bash
+
     $ docker compose pull
     ...
 
 Then, run the container with:
-    .. code-block:: bash
+.. code-block:: bash
+
     $ docker compose run --remove-orphans base
 
 
