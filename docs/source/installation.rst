@@ -36,7 +36,7 @@ You will need to install ROS. We currently support the following distributions:
 * `Humble <https://docs.ros.org/en/humble/index.html>`_
 * `Jazzy <https://docs.ros.org/en/jazzy/index.html>`_
 
-Once installed, be sure to source it (ie. via `$ source /opt/ros/humble/setup.bash`)
+Once installed, be sure to source it (ie. via ``$ source /opt/ros/humble/setup.bash``)
 
  Then run the following command to build the workspace:
 
