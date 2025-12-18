@@ -1,4 +1,4 @@
-.. _roaml_scxml_conversion:
+.. _roaml_conversion:
 
 RoaML to SCXML Conversion
 =========================

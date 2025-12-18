@@ -174,4 +174,4 @@ This produces an equivalent model in the plain `SCXML format <https://www.w3.org
 You may specify a different output folder with the `--generated-scxml-dir` argument.
 
 
-Should you wish to learn more about RoaML, its' tags and their handling, check the :ref:`RoaML to SCXML conversion <_roaml_scxml_conversion>`.
+Should you wish to learn more about RoaML, its' tags and their handling, check the :ref:`RoaML to SCXML conversion <_roaml_conversion>`.
