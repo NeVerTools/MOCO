@@ -20,9 +20,10 @@ Generic class for generators of SCXML state machine for specific ROS communicati
 from typing import Dict, Iterator, List, Optional, Type
 
 from moco.moco_common.array_type import get_default_expression_for_type, value_to_string_expr
+from moco.roaml_converter.ascxml_extensions.ros_entries import RosDeclaration
 from moco.roaml_converter.data_types.type_utils import get_data_type_from_string
 from moco.roaml_converter.scxml_entries import ScxmlData, ScxmlRoot
-from moco.roaml_converter.scxml_entries.utils import ROS_FIELD_PREFIX
+from moco.roaml_converter.scxml_entries.utils import ASCXML_FIELD_PREFIX
 
 
 class RosCommunicationHandler:
@@ -116,7 +117,7 @@ class RosCommunicationHandler:
 
         :return: Scxml object representing the necessary file content.
         """
-        NotImplementedError("Method to_scxml must be implemented.")
+        raise NotImplementedError("Method to_scxml must be implemented.")
 
     def _generate_datamodel_from_ros_fields(self, fields: Dict[str, str]) -> List[ScxmlData]:
         """
@@ -127,39 +128,57 @@ class RosCommunicationHandler:
         """
         scxml_fields: List[ScxmlData] = []
         for field_name, field_type in fields.items():
-            field_w_pref = ROS_FIELD_PREFIX + field_name
+            field_w_pref = ASCXML_FIELD_PREFIX + field_name
             field_py_type = get_data_type_from_string(field_type)
             default_expr = value_to_string_expr(get_default_expression_for_type(field_py_type))
             scxml_fields.append(ScxmlData(field_w_pref, default_expr, field_type))
         return scxml_fields
 
 
-def update_ros_communication_handlers(
+def update_ros_communication_handlers_clients(
     automaton_name: str,
     handler_class: Type[RosCommunicationHandler],
     handlers_dict: Dict[str, RosCommunicationHandler],
-    servers_dict: Dict[str, tuple],
-    clients_dict: Dict[str, tuple],
+    client_decl: RosDeclaration,
 ):
     """
-    Update the ROS communication handlers with the given clients and servers.
+    Update the ROS communication handlers with the given client declaration.
 
     :param automaton_name: The name of the automaton where the interfaces are declared.
     :param handlers_dict: The dictionary of ROS communication handlers to update.
-    :param servers_dict: The dictionary of servers to add.
-    :param clients_dict: The dictionary of clients to add.
+    :param client_decl: Declaration of the new client to add.
     """
     assert issubclass(
         handler_class, RosCommunicationHandler
     ), f"The handler class {handler_class} must be a subclass of RosCommunicationHandler."
-    for service_name, service_type in servers_dict.values():
-        if service_name not in handlers_dict:
-            handlers_dict[service_name] = handler_class()
-        handlers_dict[service_name].set_server(service_name, service_type, automaton_name)
-    for service_name, service_type in clients_dict.values():
-        if service_name not in handlers_dict:
-            handlers_dict[service_name] = handler_class()
-        handlers_dict[service_name].add_client(service_name, service_type, automaton_name)
+    service_name = client_decl.get_interface_name()
+    service_type = client_decl.get_interface_type()
+    if service_name not in handlers_dict:
+        handlers_dict[service_name] = handler_class()
+    handlers_dict[service_name].add_client(service_name, service_type, automaton_name)
+
+
+def update_ros_communication_handlers_servers(
+    automaton_name: str,
+    handler_class: Type[RosCommunicationHandler],
+    handlers_dict: Dict[str, RosCommunicationHandler],
+    server_decl: RosDeclaration,
+):
+    """
+    Update the ROS communication handlers with the given server declaration.
+
+    :param automaton_name: The name of the automaton where the interfaces are declared.
+    :param handlers_dict: The dictionary of ROS communication handlers to update.
+    :param server_decl: Declaration of the new server to add.
+    """
+    assert issubclass(
+        handler_class, RosCommunicationHandler
+    ), f"The handler class {handler_class} must be a subclass of RosCommunicationHandler."
+    service_name = server_decl.get_interface_name()
+    service_type = server_decl.get_interface_type()
+    if service_name not in handlers_dict:
+        handlers_dict[service_name] = handler_class()
+    handlers_dict[service_name].set_server(service_name, service_type, automaton_name)
 
 
 def generate_plain_scxml_from_handlers(
@@ -173,3 +192,4 @@ def generate_plain_scxml_from_handlers(
     """
     for handler in handlers_dict.values():
         yield handler.to_scxml()
+

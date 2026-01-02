@@ -19,19 +19,20 @@ import argparse
 import os
 from typing import Optional, Sequence
 
+from moco.moco_common.logging import get_warn_msg
 from moco.roaml_generator.scxml_helpers.top_level_interpreter import interpret_top_level_xml
 
 
 def main_roaml_to_scxml(_args: Optional[Sequence[str]] = None) -> None:
     """
-    Main function for the RoaML to SCXML conversion.
+    Main function for the RoaML model (with ASCXML models) to SCXML conversion.
 
     Module containing the main entry points, pulling all necessary files together.
     BT.xml         \
-    plugin.scxml    \
-    node1.scxml      => main_roaml_to_scxml  =>  output folder
-    node2.scxml     /
-    env.scxml      /
+    plugin.ascxml    \
+    node1.ascxml      => main_roaml_to_scxml  =>  output folder
+    node2.ascxml     /
+    env.ascxml      /
 
     :param args: The arguments to parse. If None, sys.argv is used.
     :return: None
@@ -46,11 +47,11 @@ def main_roaml_to_scxml(_args: Optional[Sequence[str]] = None) -> None:
         help="Path to the folder containing the generated plain-SCXML files.",
     )
 
-    parser.add_argument("main_xml", type=str, help="The path to the main XML file to interpret.")
+    parser.add_argument("roaml_xml", type=str, help="The path to the RoaML XML file to interpret.")
     args = parser.parse_args(_args)
 
     # Check the main xml file provided by the user
-    main_xml_file = args.main_xml
+    main_xml_file = args.roaml_xml
     assert os.path.isfile(main_xml_file), f"File {main_xml_file} does not exist."
     assert main_xml_file.endswith(".xml"), f"File {main_xml_file} is not a '.xml' file."
     # Process additional, optional parameters

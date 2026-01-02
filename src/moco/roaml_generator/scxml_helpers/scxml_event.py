@@ -21,13 +21,13 @@ import re
 from dataclasses import dataclass
 from typing import Dict, List, MutableSequence, Optional, Type, Union
 
-from moco.roaml_converter.scxml_entries.bt_utils import (
+from moco.roaml_converter.ascxml_extensions.bt_entries.bt_utils import (
     is_bt_halt_event,
     is_bt_halt_response_event,
     is_bt_tick_event,
     is_bt_tick_response_event,
 )
-from moco.roaml_converter.scxml_entries.ros_utils import (
+from moco.roaml_converter.ascxml_extensions.ros_entries.ros_utils import (
     is_action_request_event,
     is_action_result_event,
     is_action_thread_event,
