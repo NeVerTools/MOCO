@@ -26,7 +26,7 @@ from moco.roaml_converter.bt_converter import (
     get_blackboard_variables_from_models,
 )
 from moco.roaml_converter.data_types.struct_definition import StructDefinition
-from moco.roaml_converter.scxml_entries import EventsToAutomata, ScxmlRoot
+from moco.roaml_converter.scxml_entries import EventsToAutomata, ScxmlRoot, load_scxml_file
 from moco.roaml_generator.ros_helpers.ros_action_handler import RosActionHandler
 from moco.roaml_generator.ros_helpers.ros_communication_handler import (
     RosCommunicationHandler,
@@ -52,7 +52,7 @@ def generate_plain_scxml_models_and_timers(model: FullModel) -> List[ScxmlRoot]:
     scxml_files_to_convert: list = model.skills + model.components
     ros_scxmls: List[ScxmlRoot] = []
     for fname in scxml_files_to_convert:
-        ros_scxmls.append(ScxmlRoot.from_scxml_file(fname, custom_data_types))
+        ros_scxmls.append(load_scxml_file(fname, custom_data_types))
     # Convert behavior tree and plugins to ROS-SCXML
     if model.bt is not None:
         ros_scxmls.extend(
