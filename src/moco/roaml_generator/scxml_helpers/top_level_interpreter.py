@@ -26,7 +26,14 @@ from moco.roaml_converter.bt_converter import (
     get_blackboard_variables_from_models,
 )
 from moco.roaml_converter.data_types.struct_definition import StructDefinition
-from moco.roaml_converter.scxml_entries import EventsToAutomata, ScxmlRoot, load_scxml_file
+from moco.roaml_converter.scxml_entries import (
+    EventsToAutomata,
+    ScxmlRoot,
+    load_scxml_file
+)
+from moco.roaml_converter.scxml_entries.scxml_data import ScxmlData
+from moco.roaml_converter.scxml_entries.scxml_executable_entries import ScxmlAssign
+from moco.roaml_converter.scxml_entries.scxml_transition import ScxmlTransition
 from moco.roaml_generator.ros_helpers.ros_action_handler import RosActionHandler
 from moco.roaml_generator.ros_helpers.ros_communication_handler import (
     RosCommunicationHandler,
@@ -35,7 +42,11 @@ from moco.roaml_generator.ros_helpers.ros_communication_handler import (
 )
 from moco.roaml_generator.ros_helpers.ros_service_handler import RosServiceHandler
 from moco.roaml_generator.ros_helpers.ros_timer import RosTimer, make_global_timer_scxml
-from moco.roaml_generator.scxml_helpers.roaml_model import FullModel, RoamlDataStructures, RoamlMain
+from moco.roaml_generator.scxml_helpers.roaml_model import (
+    FullModel,
+    RoamlDataStructures,
+    RoamlMain
+)
 
 
 def generate_plain_scxml_models_and_timers(model: FullModel) -> List[ScxmlRoot]:
@@ -115,10 +126,61 @@ def generate_plain_scxml_models_and_timers(model: FullModel) -> List[ScxmlRoot]:
             if event not in event_targets:
                 event_targets[event] = set()
             event_targets[event].add(scxml_model.get_name())
+        # Turn transitions with multiple targets and probabilities
+        # into (multiple) plain SCXML transitions
+        rand_variable_id = "__RAND__"
+        rand_variable_declared = False
+        for state in scxml_model.get_states():
+            plain_scxml_transitions: List[ScxmlTransition] = []
+            randomize = False
+            for transition in state.get_body():
+                probability = 0.0
+                for target in transition.get_targets():
+                    plain_scxml_condition = transition.get_condition()
+                    target_probability = target.get_probability()
+                    if target_probability is not None:
+                        # Every time a transition has a probability:
+                        # - Declare rand variable in datamodel (if not already done)
+                        # - Randomize variable on state entry (if not already done)
+                        # - Turn probability into a condition on the transition
+                        if rand_variable_declared is False:
+                            scxml_model.get_data_model().get_data_entries().append(
+                                ScxmlData(
+                                    id_=rand_variable_id,
+                                    expr="0.0",
+                                    data_type="float64",
+                                )
+                            )
+                            rand_variable_declared = True
+                        if randomize is False:
+                            state.append_on_entry(
+                                ScxmlAssign(location=rand_variable_id, expr="Math.random()")
+                            )
+                            randomize = True
+                        if plain_scxml_condition is None:
+                            plain_scxml_condition = ""
+                        else:
+                            plain_scxml_condition = plain_scxml_condition + " && "
+                        plain_scxml_condition = (
+                            plain_scxml_condition + f"{probability} < {rand_variable_id}"
+                        )
+                        probability += target_probability
+                        plain_scxml_condition = (
+                            plain_scxml_condition + f" && {rand_variable_id} <= {probability}"
+                        )
+                    plain_scxml_transitions.append(
+                        ScxmlTransition.make_single_target_transition(
+                            target=target._target_id,
+                            events=transition.get_events(),
+                            condition=plain_scxml_condition,
+                            body=target.get_body(),
+                        )
+                    )
+            # Replace ASCXML transition with plain SCXML transition
+            state._body = plain_scxml_transitions
     # Add the target automaton to each event sent
     for scxml_model in plain_scxml_models:
         scxml_model.add_target_to_event_send(event_targets)
-
     return plain_scxml_models
 
 
