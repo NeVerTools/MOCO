@@ -30,7 +30,7 @@ from moco.roaml_converter.scxml_entries import (
     ScxmlState,
     ScxmlTransition,
 )
-from moco.roaml_converter.scxml_entries.ros_utils import (
+from moco.roaml_converter.ascxml_extensions.ros_entries.ros_utils import (
     generate_action_feedback_event,
     generate_action_feedback_handle_event,
     generate_action_goal_accepted_event,
@@ -48,7 +48,7 @@ from moco.roaml_converter.scxml_entries.ros_utils import (
 from moco.roaml_converter.scxml_entries.utils import (
     PLAIN_FIELD_EVENT_PREFIX,
     PLAIN_SCXML_EVENT_DATA_PREFIX,
-    ROS_FIELD_PREFIX,
+    ASCXML_FIELD_PREFIX,
 )
 from moco.roaml_generator.ros_helpers.ros_communication_handler import RosCommunicationHandler
 
@@ -81,7 +81,7 @@ class RosActionHandler(RosCommunicationHandler):
         send_params = [ScxmlParam(goal_id_name, expr=str(goal_id))]
         for field_name in req_params:
             # Add preliminary assignments (part of the hack mentioned in self.to_scxml())
-            field_w_pref = ROS_FIELD_PREFIX + field_name
+            field_w_pref = ASCXML_FIELD_PREFIX + field_name
             goal_req_transition.append_body_executable_entry(
                 ScxmlAssign(field_w_pref, PLAIN_FIELD_EVENT_PREFIX + field_name)
             )
@@ -124,7 +124,7 @@ class RosActionHandler(RosCommunicationHandler):
         for entry_name in additional_data:
             out_params.append(ScxmlParam(entry_name, expr=entry_name))
         for field_name in event_fields:
-            field_w_pref = ROS_FIELD_PREFIX + field_name
+            field_w_pref = ASCXML_FIELD_PREFIX + field_name
             scxml_transition.append_body_executable_entry(
                 ScxmlAssign(field_w_pref, PLAIN_FIELD_EVENT_PREFIX + field_name)
             )

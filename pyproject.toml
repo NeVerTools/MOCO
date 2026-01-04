@@ -39,7 +39,7 @@ requires-python = ">=3.10"
 # "moco" = "src/moco"
 
 [tool.setuptools.package-data]
-"moco.resources" = ["bt_control_nodes/*.scxml"]
+"moco.resources" = ["bt_control_nodes/*.ascxml"]
 
 [project.scripts]
 moco_roaml_to_scxml = "moco.roaml_generator.main:main_roaml_to_scxml" # TODO: rename this function
@@ -72,4 +72,7 @@ profile = "black"
 line_length = 100
 
 [tool.codespell]
-ignore-words-list = 'assertIn'
+ignore-words-list = [
+    'assertIn',
+    'Studi'
+]

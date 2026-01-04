@@ -28,7 +28,7 @@ from moco.roaml_converter.scxml_entries import (
     ScxmlState,
     ScxmlTransition,
 )
-from moco.roaml_converter.scxml_entries.ros_utils import (
+from moco.roaml_converter.ascxml_extensions.ros_entries.ros_utils import (
     generate_srv_request_event,
     generate_srv_response_event,
     generate_srv_server_request_event,
@@ -36,7 +36,7 @@ from moco.roaml_converter.scxml_entries.ros_utils import (
     get_srv_type_params,
     sanitize_ros_interface_name,
 )
-from moco.roaml_converter.scxml_entries.utils import PLAIN_FIELD_EVENT_PREFIX, ROS_FIELD_PREFIX
+from moco.roaml_converter.scxml_entries.utils import PLAIN_FIELD_EVENT_PREFIX, ASCXML_FIELD_PREFIX
 from moco.roaml_generator.ros_helpers.ros_communication_handler import RosCommunicationHandler
 
 
@@ -62,7 +62,7 @@ class RosServiceHandler(RosCommunicationHandler):
         assignments: List[ScxmlAssign] = []
         event_params: List[ScxmlParam] = []
         for field_name in req_fields:
-            field_w_pref = ROS_FIELD_PREFIX + field_name
+            field_w_pref = ASCXML_FIELD_PREFIX + field_name
             assignments.append(ScxmlAssign(field_w_pref, PLAIN_FIELD_EVENT_PREFIX + field_name))
             event_params.append(ScxmlParam(field_w_pref, expr=field_w_pref))
         return ScxmlTransition.make_single_target_transition(
@@ -81,7 +81,7 @@ class RosServiceHandler(RosCommunicationHandler):
         assignments: List[ScxmlAssign] = []
         event_params: List[ScxmlParam] = []
         for field_name in res_fields:
-            field_w_pref = ROS_FIELD_PREFIX + field_name
+            field_w_pref = ASCXML_FIELD_PREFIX + field_name
             assignments.append(ScxmlAssign(field_w_pref, PLAIN_FIELD_EVENT_PREFIX + field_name))
             event_params.append(ScxmlParam(field_w_pref, expr=field_w_pref))
         return ScxmlTransition.make_single_target_transition(
