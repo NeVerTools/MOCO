@@ -1,0 +1,54 @@
+<scxml name="BT_plugin_1002_pick" version="1.0" model_src="" initial="initial" xmlns="http://www.w3.org/2005/07/scxml">
+    <datamodel>
+        <!-- TYPE tmp_result:bool -->
+        <data id="tmp_result" expr="false"/>
+    </datamodel>
+    <state id="initial">
+        <transition event="bt_1002_tick" target="wait_result">
+            <send event="action_pick_object_goal_req_client_BT_plugin_1002_pick" target="action_handler_pick_object">
+                <param name="ros_fields__object_id" expr="0"/>
+            </send>
+            <send event="bt_1002_response" target="BT_plugin_1000_SequenceWithMemory">
+                <param name="status" expr="3"/>
+            </send>
+        </transition>
+        <transition event="bt_1002_halt" target="initial">
+            <assign location="tmp_result" expr="false"/>
+            <send event="bt_1002_halt_response" target="BT_plugin_1000_SequenceWithMemory"/>
+        </transition>
+    </state>
+    <state id="wait_result">
+        <transition event="bt_1002_tick" target="wait_result">
+            <send event="bt_1002_response" target="BT_plugin_1000_SequenceWithMemory">
+                <param name="status" expr="3"/>
+            </send>
+        </transition>
+        <transition event="bt_1002_halt" target="initial">
+            <assign location="tmp_result" expr="false"/>
+            <send event="bt_1002_halt_response" target="BT_plugin_1000_SequenceWithMemory"/>
+        </transition>
+        <transition event="action_pick_object_result_handle_client_BT_plugin_1002_pick" cond="_event.data.code == 4" target="result_available">
+            <assign location="tmp_result" expr="true"/>
+        </transition>
+        <transition event="action_pick_object_result_handle_client_BT_plugin_1002_pick" cond="_event.data.code == 6" target="result_available">
+            <assign location="tmp_result" expr="false"/>
+        </transition>
+    </state>
+    <state id="result_available">
+        <transition event="bt_1002_tick" target="initial">
+            <if cond="tmp_result">
+                <send event="bt_1002_response" target="BT_plugin_1000_SequenceWithMemory">
+                    <param name="status" expr="1"/>
+                </send>
+                <else/>
+                <send event="bt_1002_response" target="BT_plugin_1000_SequenceWithMemory">
+                    <param name="status" expr="2"/>
+                </send>
+            </if>
+        </transition>
+        <transition event="bt_1002_halt" target="initial">
+            <assign location="tmp_result" expr="false"/>
+            <send event="bt_1002_halt_response" target="BT_plugin_1000_SequenceWithMemory"/>
+        </transition>
+    </state>
+</scxml>

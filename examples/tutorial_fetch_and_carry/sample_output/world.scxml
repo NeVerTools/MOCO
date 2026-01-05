@@ -1,0 +1,82 @@
+<scxml name="world" version="1.0" model_src="" initial="idle" xmlns="http://www.w3.org/2005/07/scxml">
+    <datamodel>
+        <!-- TYPE obj_locs:int32[1] -->
+        <data id="obj_locs" expr="[0]"/>
+        <!-- TYPE robot_loc:int32 -->
+        <data id="robot_loc" expr="1"/>
+        <!-- TYPE robot_holding:int32 -->
+        <data id="robot_holding" expr="-1"/>
+        <!-- TYPE goal_id:int32 -->
+        <data id="goal_id" expr="0"/>
+        <!-- TYPE req_obj_idx:int32 -->
+        <data id="req_obj_idx" expr="0"/>
+        <!-- TYPE req_loc_idx:int32 -->
+        <data id="req_loc_idx" expr="0"/>
+    </datamodel>
+    <state id="idle">
+        <onentry>
+            <send event="topic_snacks0_loc_msg" target="NONE">
+                <param name="ros_fields__data" expr="obj_locs[0]"/>
+            </send>
+        </onentry>
+        <transition event="action_go_to_goal_goal_handle" target="handle_nav_request">
+            <assign location="goal_id" expr="_event.data.goal_id"/>
+            <assign location="req_loc_idx" expr="_event.data.ros_fields__loc_id"/>
+            <send event="action_go_to_goal_goal_accepted" target="action_handler_go_to_goal">
+                <param name="goal_id" expr="goal_id"/>
+            </send>
+        </transition>
+        <transition event="action_pick_object_goal_handle" target="handle_pick_request">
+            <assign location="goal_id" expr="_event.data.goal_id"/>
+            <assign location="req_obj_idx" expr="_event.data.ros_fields__object_id"/>
+            <send event="action_pick_object_goal_accepted" target="action_handler_pick_object">
+                <param name="goal_id" expr="goal_id"/>
+            </send>
+        </transition>
+        <transition event="action_place_object_goal_handle" target="idle">
+            <assign location="goal_id" expr="_event.data.goal_id"/>
+            <send event="action_place_object_goal_accepted" target="action_handler_place_object">
+                <param name="goal_id" expr="goal_id"/>
+            </send>
+            <if cond="robot_holding != -1">
+                <assign location="obj_locs[robot_holding]" expr="robot_loc"/>
+                <assign location="robot_holding" expr="-1"/>
+                <send event="action_place_object_result" target="action_handler_place_object">
+                    <param name="goal_id" expr="goal_id"/>
+                    <param name="code" expr="4"/>
+                </send>
+                <else/>
+                <send event="action_place_object_result" target="action_handler_place_object">
+                    <param name="goal_id" expr="goal_id"/>
+                    <param name="code" expr="6"/>
+                </send>
+            </if>
+        </transition>
+    </state>
+    <state id="handle_nav_request">
+        <transition target="idle">
+            <assign location="robot_loc" expr="req_loc_idx"/>
+            <send event="action_go_to_goal_result" target="action_handler_go_to_goal">
+                <param name="goal_id" expr="goal_id"/>
+                <param name="code" expr="4"/>
+            </send>
+        </transition>
+    </state>
+    <state id="handle_pick_request">
+        <transition target="idle">
+            <if cond="obj_locs[req_obj_idx] == robot_loc &amp;&amp; robot_holding &lt; 0">
+                <assign location="robot_holding" expr="req_obj_idx"/>
+                <assign location="obj_locs[req_obj_idx]" expr="-1"/>
+                <send event="action_pick_object_result" target="action_handler_pick_object">
+                    <param name="goal_id" expr="goal_id"/>
+                    <param name="code" expr="4"/>
+                </send>
+                <else/>
+                <send event="action_pick_object_result" target="action_handler_pick_object">
+                    <param name="goal_id" expr="goal_id"/>
+                    <param name="code" expr="6"/>
+                </send>
+            </if>
+        </transition>
+    </state>
+</scxml>

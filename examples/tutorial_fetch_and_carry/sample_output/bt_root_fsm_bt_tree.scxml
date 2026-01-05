@@ -1,0 +1,14 @@
+<scxml name="bt_root_fsm_bt_tree" version="1.0" model_src="" initial="idle" xmlns="http://www.w3.org/2005/07/scxml">
+    <state id="idle">
+        <transition event="ros_time_rate.bt_tree_tick" target="wait_tick_res">
+            <send event="bt_1000_tick" target="BT_plugin_1000_SequenceWithMemory"/>
+        </transition>
+        <transition event="bt_1000_response" target="error"/>
+    </state>
+    <state id="wait_tick_res">
+        <transition event="bt_1000_response" cond="_event.data.status == 3" target="idle"/>
+        <transition event="bt_1000_response" target="done"/>
+    </state>
+    <state id="done"/>
+    <state id="error"/>
+</scxml>
