@@ -4,9 +4,9 @@
 
 # mypy: ignore-errors
 
-project = "CONVINCE Model Checking Components"
-copyright = "2025"
-author = "CONVINCE Consortium"
+project = "MOdel COmpiler"
+copyright = "2026"
+author = "NeVerTools"
 
 release = "0.1"
 version = "0.1.0"
