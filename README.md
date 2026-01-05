@@ -1,12 +1,13 @@
-# Autonomous Systems to Formal Models (moco)
+# MOdel COmpiler (moco)
 
 ## Summary overview
 
-This package provides tools to convert the high level representation of an autonomous system (implemented using a combination of BT XML + a ROS flavoured set of SCXML (also called ROS-SCXML) files) to a formal model (i.e. RoAML).
+This package provides tools to convert a RoaML model system description to a lower-level, plain SCXML representation that can be used in model checking tools.
+Examples of such tools are [MOON](https://github.com/convince-project/moon) and [SCAn](https://github.com/convince-project/scan).
 
 ## Documentation
 
-Please access the documentation via [convince-project.github.io/moco](https://convince-project.github.io/moco)
+Please access the documentation at [nevertools.github.io/MOCO](https://nevertools.github.io/MOCO)
 
 ## Further Information
 
@@ -16,8 +17,8 @@ See [Contributing](./CONTRIBUTING.md).
 
 ### Feedback
 
-Feedback is highly appreciated. Please open issues on new ideas, bugs, etc. here at [moco/issues](https://github.com/convince-project/moco/issues) or reach out to the maintainers.
+Feedback is highly appreciated. Please open issues on new ideas, bugs, etc. at [moco/issues](https://github.com/nevertools/moco/issues) or reach out to the maintainers.
 
 ### License
 
-moco comes under the Apache-2.0 license, see [LICENSE](./LICENSE).
+MOCO comes under the Apache-2.0 license, see [LICENSE](./LICENSE).

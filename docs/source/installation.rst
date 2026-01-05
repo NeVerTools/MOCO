@@ -6,7 +6,7 @@ Installation
 Docker
 ^^^^^^
 
-In the root folder of the repository, pull the necessary docker image:
+If you cloned the repository, pull the docker image from its' root folder:
 
 .. sybil-new-environment: IGNORE
 
@@ -15,7 +15,15 @@ In the root folder of the repository, pull the necessary docker image:
     $ docker compose pull
     ...
 
-Then run it with:
+Or pull it directly from Github container registry:
+
+.. code-block:: bash
+
+    $ docker pull ghcr.io/nevertools/moco:latest
+    ...
+
+
+Then, run it with:
 
 .. code-block:: bash
 
@@ -45,7 +53,7 @@ Once installed, be sure to source it (ie. via ``$ source /opt/ros/humble/setup.b
     $ docker compose build base
     ...
 
-And you can now run it with:
+And run it with:
 
 .. code-block:: bash
 

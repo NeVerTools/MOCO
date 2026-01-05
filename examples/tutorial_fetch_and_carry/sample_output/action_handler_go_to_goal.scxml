@@ -1,0 +1,65 @@
+<scxml name="action_handler_go_to_goal" version="1.0" model_src="" initial="waiting" xmlns="http://www.w3.org/2005/07/scxml">
+    <datamodel>
+        <!-- TYPE ros_fields__loc_id:int32 -->
+        <data id="ros_fields__loc_id" expr="0"/>
+        <!-- TYPE goal_id:int32 -->
+        <data id="goal_id" expr="0"/>
+        <!-- TYPE code:int32 -->
+        <data id="code" expr="0"/>
+    </datamodel>
+    <state id="waiting">
+        <transition event="action_go_to_goal_goal_req_client_BT_plugin_1001_navigate" target="goal_requested">
+            <assign location="ros_fields__loc_id" expr="_event.data.ros_fields__loc_id"/>
+            <send event="action_go_to_goal_goal_handle" target="world">
+                <param name="goal_id" expr="0"/>
+                <param name="ros_fields__loc_id" expr="ros_fields__loc_id"/>
+            </send>
+        </transition>
+        <transition event="action_go_to_goal_goal_req_client_BT_plugin_1003_navigate" target="goal_requested">
+            <assign location="ros_fields__loc_id" expr="_event.data.ros_fields__loc_id"/>
+            <send event="action_go_to_goal_goal_handle" target="world">
+                <param name="goal_id" expr="1"/>
+                <param name="ros_fields__loc_id" expr="ros_fields__loc_id"/>
+            </send>
+        </transition>
+        <transition event="action_go_to_goal_feedback" target="waiting">
+            <assign location="goal_id" expr="_event.data.goal_id"/>
+            <if cond="goal_id == 0">
+                <send event="action_go_to_goal_feedback_handle_client_BT_plugin_1001_navigate" target="NONE"/>
+                <elseif cond="goal_id == 1"/>
+                <send event="action_go_to_goal_feedback_handle_client_BT_plugin_1003_navigate" target="NONE"/>
+            </if>
+        </transition>
+        <transition event="action_go_to_goal_result" target="waiting">
+            <assign location="code" expr="_event.data.code"/>
+            <assign location="goal_id" expr="_event.data.goal_id"/>
+            <if cond="goal_id == 0">
+                <send event="action_go_to_goal_result_handle_client_BT_plugin_1001_navigate" target="BT_plugin_1001_navigate">
+                    <param name="code" expr="code"/>
+                </send>
+                <elseif cond="goal_id == 1"/>
+                <send event="action_go_to_goal_result_handle_client_BT_plugin_1003_navigate" target="BT_plugin_1003_navigate">
+                    <param name="code" expr="code"/>
+                </send>
+            </if>
+        </transition>
+    </state>
+    <state id="goal_requested">
+        <transition event="action_go_to_goal_goal_accepted" target="waiting">
+            <assign location="goal_id" expr="_event.data.goal_id"/>
+            <if cond="goal_id == 0">
+                <send event="action_go_to_goal_goal_accept_client_BT_plugin_1001_navigate" target="NONE"/>
+                <elseif cond="goal_id == 1"/>
+                <send event="action_go_to_goal_goal_accept_client_BT_plugin_1003_navigate" target="NONE"/>
+            </if>
+        </transition>
+        <transition event="action_go_to_goal_goal_rejected" target="waiting">
+            <assign location="goal_id" expr="_event.data.goal_id"/>
+            <if cond="goal_id == 0">
+                <send event="action_go_to_goal_goal_reject_client_BT_plugin_1001_navigate" target="NONE"/>
+                <elseif cond="goal_id == 1"/>
+                <send event="action_go_to_goal_goal_reject_client_BT_plugin_1003_navigate" target="NONE"/>
+            </if>
+        </transition>
+    </state>
+</scxml>

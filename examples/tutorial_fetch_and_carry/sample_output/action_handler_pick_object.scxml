@@ -1,0 +1,48 @@
+<scxml name="action_handler_pick_object" version="1.0" model_src="" initial="waiting" xmlns="http://www.w3.org/2005/07/scxml">
+    <datamodel>
+        <!-- TYPE ros_fields__object_id:int32 -->
+        <data id="ros_fields__object_id" expr="0"/>
+        <!-- TYPE goal_id:int32 -->
+        <data id="goal_id" expr="0"/>
+        <!-- TYPE code:int32 -->
+        <data id="code" expr="0"/>
+    </datamodel>
+    <state id="waiting">
+        <transition event="action_pick_object_goal_req_client_BT_plugin_1002_pick" target="goal_requested">
+            <assign location="ros_fields__object_id" expr="_event.data.ros_fields__object_id"/>
+            <send event="action_pick_object_goal_handle" target="world">
+                <param name="goal_id" expr="0"/>
+                <param name="ros_fields__object_id" expr="ros_fields__object_id"/>
+            </send>
+        </transition>
+        <transition event="action_pick_object_feedback" target="waiting">
+            <assign location="goal_id" expr="_event.data.goal_id"/>
+            <if cond="goal_id == 0">
+                <send event="action_pick_object_feedback_handle_client_BT_plugin_1002_pick" target="NONE"/>
+            </if>
+        </transition>
+        <transition event="action_pick_object_result" target="waiting">
+            <assign location="code" expr="_event.data.code"/>
+            <assign location="goal_id" expr="_event.data.goal_id"/>
+            <if cond="goal_id == 0">
+                <send event="action_pick_object_result_handle_client_BT_plugin_1002_pick" target="BT_plugin_1002_pick">
+                    <param name="code" expr="code"/>
+                </send>
+            </if>
+        </transition>
+    </state>
+    <state id="goal_requested">
+        <transition event="action_pick_object_goal_accepted" target="waiting">
+            <assign location="goal_id" expr="_event.data.goal_id"/>
+            <if cond="goal_id == 0">
+                <send event="action_pick_object_goal_accept_client_BT_plugin_1002_pick" target="NONE"/>
+            </if>
+        </transition>
+        <transition event="action_pick_object_goal_rejected" target="waiting">
+            <assign location="goal_id" expr="_event.data.goal_id"/>
+            <if cond="goal_id == 0">
+                <send event="action_pick_object_goal_reject_client_BT_plugin_1002_pick" target="NONE"/>
+            </if>
+        </transition>
+    </state>
+</scxml>
