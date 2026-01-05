@@ -235,6 +235,11 @@ The structure of a client-server communication through actions and additional th
     :align: center
 
 
+.. _bt_plugin_scxml:
+
+BT Plugins
+^^^^^^^^^^
+
 .. _bt_communication:
 
 BT Communication

@@ -18,7 +18,7 @@ A full RoaML robotic system and the information needed for model checking consis
 * the Behavior Tree in XML,
 * the plugins of the Behavior Tree leaf nodes in ASCXML
 
-The full bundle of files is converted to an equivalent model in plain SCXML, which can be directly verified using model checkers such as `SCAN <https://github.com/convince-project/scan>`_.
+The full bundle of files is converted to an equivalent model in plain SCXML, which can be directly verified using model checkers such as SCAN.
 
 .. image:: graphics/moco_overview.drawio.svg
     :alt: How MOCO works
@@ -39,5 +39,6 @@ Contents
 
 .. toctree::
    :maxdepth: 1
+
    api
    contacts
