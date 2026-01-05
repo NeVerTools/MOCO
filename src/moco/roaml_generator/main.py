@@ -41,13 +41,13 @@ def main_roaml_to_scxml(_args: Optional[Sequence[str]] = None) -> None:
         description="Convert RoaML robot system models to plain SCXML."
     )
     parser.add_argument(
-        "--generated-scxml-dir",
+        "--out", "--o",
         type=str,
         default="./output",
         help="Path to the folder containing the generated plain-SCXML files.",
     )
 
-    parser.add_argument("roaml_xml", type=str, help="The path to the RoaML XML file to interpret.")
+    parser.add_argument("roaml_xml", type=str, help="The path to the main RoaML XML file to interpret.")
     args = parser.parse_args(_args)
 
     # Check the main xml file provided by the user
@@ -55,7 +55,7 @@ def main_roaml_to_scxml(_args: Optional[Sequence[str]] = None) -> None:
     assert os.path.isfile(main_xml_file), f"File {main_xml_file} does not exist."
     assert main_xml_file.endswith(".xml"), f"File {main_xml_file} is not a '.xml' file."
     # Process additional, optional parameters
-    scxml_out_dir = args.generated_scxml_dir
+    scxml_out_dir = args.out
     scxml_out_dir = None if len(scxml_out_dir) == 0 else scxml_out_dir
 
     print("MOCO - RoAML to SCXML.\n")
