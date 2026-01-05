@@ -15,7 +15,9 @@ Using SCXML, the system can be modeled as a set of state machines, each one repr
 RoaML Model Implementation
 --------------------------
 
-RoaML relies on multiple (A)SCXML files, each one representing a different state-based automaton, to represent a complete system.
+In order to make SCXML fit more to the typical robotics tech-stack, we extended the default SCXML language to support ROS specific features and Behavior Trees.
+
+RoaML relies on multiple ASCXML (Advanced SCXML) files, each one representing a different state-based automaton, to represent a complete system.
 Those automata can exchange data and synchronize their execution through the use of **events**.
 
 A simple, exemplary SCXML model is shown below:
@@ -50,8 +52,6 @@ In this example, the SCXML model consists of three states, `s0`, `s1`, and `s2`,
 Additionally, on each transition, a counter is incremented.
 
 The events are expected to be sent by another SCXML model, similarly to how it is done in the `s2` state.
-
-In order to make SCXML fit more to the typical robotics tech-stack, we extended the default SCXML language to support ROS specific features and Behavior Trees.
 
 The following sections guide you through the process of :ref:`creating a SCXML model of a ROS node <ros_node_scxml>` and of a :ref:`BT plugin <bt_plugin_scxml>` that can be processed by MOCO.
 
@@ -235,32 +235,19 @@ The structure of a client-server communication through actions and additional th
     :align: center
 
 
-.. _bt_plugin_scxml:
-
-Creating an ASCXML model of a BT plugin
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-As for ROS nodes, in AS2FM we support the implementation of custom BT plugins using ROS-SCXML.
-
-Since BT plugins rely on a specific interface, the extended ASCXML language supports the following features:
-
-* :ref:`BT communication <bt_communication>`: A set of XML tags for modeling the BT Communication interface, based on BT ticks and BT responses.
-* :ref:`BT Ports <bt_ports>`: A special BT interface to parametrize a specific plugin instance.
-
-
 .. _bt_communication:
 
 BT Communication
 _________________
 
-Normally, a BT plugin (or BT node), is idle until it receives a BT tick from a control node.
+Normally, a BT plugin (or BT node) is idle until it receives a BT tick from a control node.
 The BT tick is used to trigger the execution of the BT plugin, which will then return a BT response to the control node that sent the tick.
 
-The BT plugin `AlwaysSuccess`, that returns `SUCCESS` each time it is ticked, can be implemented as follows:
+An example BT plugin `AlwaysSuccess`, which returns `SUCCESS` each time it is ticked, can be implemented as follows:
 
 .. code-block:: xml
 
-    <scxml name="AlwaysSuccess" initial="idle">
+    <ascxml name="AlwaysSuccess" initial="idle">
         <state id="idle">
             <bt_tick target="idle">
                 <bt_return_status status="SUCCESS" />
@@ -269,21 +256,21 @@ The BT plugin `AlwaysSuccess`, that returns `SUCCESS` each time it is ticked, ca
                 <bt_return_halted/>
             </bt_halt>
         </state>
-    </scxml>
+    </ascxml>
 
-In this example, there is only the `idle` state, always listening for an incoming `bt_tick` event.
-When the tick is received, the plugin starts executing the body of the `bt_tick` tag, that returns a `SUCCESS` response and starts listening for a new `bt_tick`.
+In this example, there is only an `idle` state, always listening for an incoming `bt_tick` event.
+When the tick is received, the plugin starts executing the body of the `bt_tick` tag, which returns a `SUCCESS` response and starts listening for a new `bt_tick`.
 
-The BT plugin could receive also an `halt` request from the BT controller, that starts the execution of the `bt_halt` body.
-In this example the `bt_halt` body contains only the `bt_return_halted` tag, that signals to the node that requested the halt that this was handled.
+The BT plugin may also receive a `halt` request from the BT controller, which starts the execution of `bt_halt`'s body.
+In this example, the body of `bt_halt` contains only the `bt_return_halted` tag, that signals to the requesting node that the request has been handled.
 
-All BT plugins are expected to contain at least `bt_tick` and `bt_halt` tags.
+All BT plugins are expected to contain at least the `bt_tick` and `bt_halt` tags.
 
-Additionally, it is possible to model BT control nodes, that can send ticks to their children (that, in turns, are BT nodes as well) and receive their responses:
+It is also possible to model BT control nodes that send ticks to their children (which are also BT nodes) and receive their responses:
 
 .. code-block:: xml
 
-    <scxml initial="wait_for_tick" name="Inverter">
+    <ascxml initial="wait_for_tick" name="Inverter">
         <!-- A default BT port reporting the amount of children -->
         <bt_declare_port_in key="CHILDREN_COUNT" type="int8" />
 
@@ -330,16 +317,16 @@ Additionally, it is possible to model BT control nodes, that can send ticks to t
         <!-- A state to transition to when something did not work -->
         <state id="error" />
 
-    </scxml>
+    </ascxml>
 
-In this example, the `Inverter` control node waits for a tick, then sends a tick to its child (identified by the id `0`), and waits for the response.
-Once the child response is available, the control node inverts the response and sends it back to the control node that ticked it in the first place.
+In this example, the `Inverter` control node waits for a tick, then sends a tick to its' child (identified by the id `0`), and waits for a response.
+Once the child's response is available, the control node inverts the response and sends it back to the control node that ticked it in the first place.
 
-Similarly, in case it receives a halt request, the node sends a halt request to its child and waits for its response, before responding to its parent node that the halting request was fulfilled.
+Similarly, if it receives a halt request, the node sends a halt request to its child and waits for its response, before responding to its parent node that the halting request was fulfilled.
 
-In this model, the `CHILDREN_COUNT` BT port is used to access the number of children of a control node instance, to check it is correctly configured.
+In this model, the `CHILDREN_COUNT` BT port is used to access the number of children of a control node instance, to check that it is correctly configured.
 
-Additional control nodes implementations are available in the `src/as2fm/resources <https://github.com/nevertools/MOCO/blob/main/src/moco/resources/bt_control_nodes>`_ folder, and can be used as a reference to implement new ones.
+Additional implementations of control nodes are available in the `src/moco/resources <https://github.com/nevertools/MOCO/blob/main/src/moco/resources/bt_control_nodes>`_ folder, and can be used as a reference to implement new ones.
 
 .. _bt_ports:
 
@@ -348,7 +335,7 @@ ________
 
 When loading a BT plugin in the BT XML tree, it is possible to configure a specific plugin instance by means of the BT ports.
 
-As in the case of ROS functionalities, BT ports need to be declared before being used, to provide the port name and expected type.
+Just like ROS functionalities, BT ports need to be declared before being used, to provide the port name and expected type.
 
 .. code-block:: xml
 
@@ -356,7 +343,7 @@ As in the case of ROS functionalities, BT ports need to be declared before being
     <bt_declare_port_in key="start_value" type="int32" />
     <bt_declare_port_out key="output_int" type="int32" />
 
-Once declared, it is possible to reference to the port in multiple SCXML entries.
+Once declared, it is possible to reference the port in multiple ASCXML entries.
 
 For example, we can use `my_string_port` to define the topic used by a ROS publisher.
 
@@ -380,7 +367,7 @@ Or we can use `start_value` to define the initial value of a variable.
         </data>
     </datamodel>
 
-Finally, we can store a specific value to the blackboard (only for output ports).
+We can also store a specific value to the blackboard (only for output ports).
 
 .. code-block:: xml
 
@@ -394,12 +381,12 @@ Finally, we can store a specific value to the blackboard (only for output ports)
     </state>
 
 
-BT Ports can be declared either as input or output ports:
+BT Ports can be declared as either input or output ports:
 
 * input ports can refer to either fixed or mutable variables (i.e. blackboard variables)
-* output ports on only refer to mutable variables
+* output ports can only refer to mutable variables
 
-When a BT plugin declares an output port, this must be referenced to a `BT Blackboard` variable.
+When a BT plugin declares an output port, it must be referenced to a `BT Blackboard` variable.
 This is defined in the BT XML file, by providing a blackboard variable name wrapped by curly braces.
 
 .. _bt_blackboard:
@@ -420,7 +407,7 @@ This diagram summarizes the FSM structure.
 Setting Blackboard Variables
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This can be done using the tag `bt_set_output` in ASCXML nodes. In plain SCXML, it translates to a send event, which is received by the Blackboard FSM to update the internal data.
+This can be done using the tag `bt_set_output` in ASCXML nodes. In plain SCXML, it translates to a send event, received by the Blackboard FSM which updates internal data.
 
 Reading Blackboard Variables
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -467,16 +454,16 @@ An exemplary system description is the following:
 Available Parameters
 ~~~~~~~~~~~~~~~~~~~~~
 
-MOCO provides a number of parameters to control the generation of the formal model. They are all contained in the tag `<parameters>`.
+MOCO provides a number of parameters to control the generation of the formal model. They are all contained in the `<parameters>` tag.
 
 Max Time
 ________
 
-The maximum time the global clock is allowed to reach.
+The maximum time that the global clock is allowed to reach.
 
 The tag is called `max_time`. The `value` argument is the max time, and the argument `unit` specifies the time unit of the provided value. Supported units are `s`, `ms`, `us`, `ns`.
 
-For example `<max_time value="100" unit="s" />` would allow the model to run for 100 seconds.
+For example, `<max_time value="100" unit="s" />` would allow the model to run for 100 seconds.
 
 Max Array Size
 ______________
